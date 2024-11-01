@@ -1,0 +1,60 @@
+
+.control-section {
+  display: flex;
+  justify-content: center;
+  gap: 250px; /* Space between the two columns */
+  margin-top: 20px;
+}
+
+.control-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between buttons in each column */
+}
+
+  
+.control-button {
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 0;
+    font-weight: 600;
+    font-size: 18px;
+    color: black;
+    cursor: pointer;
+    width: 300px; /* Standard width for most buttons */
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-button.blue-button {
+  background-color: #0370be;
+  color: white;
+  width: 250px; /* Special width for "Encoder Calibration" button */
+  height: 100px;
+  margin-left: 22px;
+
+
+}
+
+  /* .blue-button {
+    background-color: #007bff;
+    color: white;
+  }
+   */
+   .control-button:hover {
+    background-color: #ccc;
+  }
+  
+  /* .reset-button {
+    background-color: #d3d3d3;
+  }
+  
+  .screen-unlock {
+    background-color: #f56a06;
+    color: white;
+  } 
+
+   */

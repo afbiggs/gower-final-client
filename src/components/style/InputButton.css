@@ -1,0 +1,21 @@
+.input-button {
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 30px;
+    padding: 10px;
+    color: black;
+    font-size: large;
+    font-weight: 600;
+    cursor: pointer;
+    width: 170px;
+    height: 50px;
+    margin-top: 60px;
+    margin-right: 80px;
+ 
+    justify-content: center;
+  }
+  
+  .input-button:hover {
+    background-color: #777;
+  }
+  
