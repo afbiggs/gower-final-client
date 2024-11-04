@@ -8,3 +8,4 @@ function EStopButton({ label }) {
 }
 
 export default EStopButton;
+

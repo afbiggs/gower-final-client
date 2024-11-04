@@ -32,14 +32,6 @@ body {
   position: relative;
 }
 
-.display-section {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-
-
 .indicator-section {
   display: flex;
   justify-content: center;
@@ -53,3 +45,5 @@ body {
   font-weight: bold;
   margin-bottom: 20px;
 }
+
+

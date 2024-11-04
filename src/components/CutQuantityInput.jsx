@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import DisplayBox from "./DisplayBox";
+import InputButton from "./InputButton";
 import io from 'socket.io-client';
 
 const socket = io('http://192.168.8.212:4100'); // Ensure the IP and port are correct
@@ -16,36 +18,40 @@ function CutQuantity() {
     }
   };
 
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="cut-quantity-frame">
-      <div className="cut-length-parent">
-        <div className="cut-length">Cut Quantity</div>
-        <div className="cut-coount-inner">
-          <div className="container">
-            <input
-              type="number"
-              className="div"
-              value={cutQuantity}
-              onChange={handleInputChange}
-              placeholder="00000"
-            />
-          </div>
-        </div>
-      </div>
-      <div className="cut-quantity-frame-inner">
-        <div className="input-quantity-wrapper">
-          <button className="input-length" onClick={sendCutQuantity}>
-            Input Quantity
-          </button>
-        </div>
-      </div>
+    <div className="cut-quantity-input">
+      <DisplayBox label="Cut Quantity" value={cutQuantity || "00000"} />
+      <input
+        type="number"
+        value={cutQuantity}
+        onChange={handleInputChange}
+        placeholder="00000"
+        className="cut-quantity-input-field"
+      />
+      <InputButton onClick={sendCutQuantity}>Input Quantity</InputButton>
     </div>
   );
 }
 
 export default CutQuantity;
 
-// import React, { useState } from 'react';
+
+// import React, { useState, useEffect } from "react";
+// import DisplayBox from "./DisplayBox";
+// import InputButton from "./InputButton";
+
+
+
 // import io from 'socket.io-client';
 
 // const socket = io('http://192.168.8.212:4100'); // Ensure the IP and port are correct
@@ -64,15 +70,15 @@ export default CutQuantity;
 //   };
 
 //   return (
-//     <div className="cut-quantity">
+//     <div className="cut-quantity-Input">
 //       <h2>Cut Quantity</h2>
-//       <input
+//       <DisplayBox
 //         type="number"
 //         value={cutQuantity}
 //         onChange={handleInputChange}
 //         placeholder="00000"
 //       />
-//       <button onClick={sendCutQuantity}>Input Quantity</button>
+//       <InputButton onClick={sendCutQuantity}>Input Quantity</InputButton>
 //     </div>
 //   );
 // }
