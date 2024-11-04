@@ -1,8 +1,37 @@
+.cut-data-section {
+  display: flex;
+  gap: 300px; /* Space between the two display-box-container elements */
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-right: 200px;
+}
+
+.cut-data-section .display-box-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
 .display-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+  
+}
+
+.cut-data-section .display-box {
+  background-color: #4d4c53; /* Grey box color */
+  border-radius: 5px;
+  padding: 10px;
+  width: 200px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .display-label {
@@ -10,6 +39,15 @@
   color: #ccc;
   margin-bottom: 5px; /* Space between label and box */
 }
+
+
+
+/* .cut-data-section .display-input {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  
+} */
 
 /* .display-box {
   background-color: #4d4c53;
@@ -45,8 +83,14 @@
   justify-content: space-around;
   align-items: center;
   margin-bottom: 20px;
- 
 } 
+
+.display-box-container{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
 
 .display-input {
   background-color: transparent; /* Makes the background transparent */

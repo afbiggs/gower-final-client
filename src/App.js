@@ -244,29 +244,34 @@ function App() {
   return (
     <div className="app">
       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
-      <div className="display-section"> 
+      <div className="cut-data-section"> 
+        <div className="display-box-container">
+        <label className="display-label">Cut Length</label>
         <div className="display-box">
-          <label className="display-label">Cut Length</label>
           <input
             type="text"
             className="display-input"
             value={cutLength}
             onChange={handleCutLengthChange}
           />
+          </div>
           <InputButton label="Input Length" />
         </div>
         
-        <div className="display-box">
+        <div className="display-box-container">
           <label className="display-label">Cut Quantity</label>
+          <div className="display-box">
           <input
             type="text"
             className="display-input"
             value={cutQuantity}
             onChange={handleCutQuantityChange}
           />
+          </div>
           <InputButton label="Input Quantity" />
         </div>
       </div>
+    
 
       <div className="display-section">
         <DisplayBox label="Cut Count" value="00000" />
