@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import "./style/NumericKeypad.css";
 
-function NumericKeypad({onClose, onSubmit}) {
+function NumericKeypad({onClose, onSubmit, allowDecimal}) {
     console.log("NumericKeypad rendered");
     const [inputValue, setInputValue] = useState("");
 
     const handleButtonClick = (value) => {
+        if (value === "." && inputValue.includes(".")) return; 
         setInputValue((prev) => prev + value);
     };
 
@@ -22,16 +23,25 @@ function NumericKeypad({onClose, onSubmit}) {
         onClose("");
     };
 
+    const handleOverlayClick = (e) => { 
+        if (e.target.classList.contains("keypad-overlay")) {
+            onClose();
+        }
+    };
+
     return (
-        <div className="keypad-overlay">
+        <div className="keypad-overlay" onClick={handleOverlayClick}>
             <div className="keypad">
                 <input type="text" value={inputValue} readOnly className="keypad-display" />
                 <div className="keypad-buttons">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
-                        <button key={num} onClick={() => handleButtonClick(num.toString)}>
+                    {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map((num) => (
+                        <button key={num} onClick={() => handleButtonClick(num)}>
                             {num}
                         </button>
                     ))}
+                    {allowDecimal && (
+                        <button onClick={() => handleButtonClick(".")}>.</button>
+                    )}
                     <button onClick={handleBackspace}>⬅︎</button>
                     <button onClick={handleClear}>Clear</button>
                     <button onClick={handleSubmit}>Enter</button>

@@ -1,145 +1,3 @@
-// import './components/style/App.css';
-// import React, { useState, useEffect } from 'react';
-// import io from 'socket.io-client';
-// import RelayButton from './components/relaybuttons';  // Import the RelayButton component
-// // import EncoderDisplay from './components/encoderdisplay'; // Import the DisplayData component for the encoder data
-// import DisplayData from './components/encoderdisplay';
-
-// // Establish a WebSocket connection to the Node.js server
-// const socket = io('http://192.168.8.212:4100');
-
-// function App() {
-//   // State for connection status and travel distance from the encoder
-//   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
-//   const [travelDistance, setTravelDistance] = useState(0); // State to store travel distance
-
-//   // Use useEffect to handle WebSocket events
-//   useEffect(() => {
-//     // On WebSocket connection
-//     socket.on('connect', () => {
-//       setConnectionStatus('Connected');
-//     });
-
-//     // On WebSocket disconnection
-//     socket.on('disconnect', () => {
-//       setConnectionStatus('Disconnected');
-//     });
-
-//     // Listen for travel distance data from the server
-//     // Listen for travel distance data
-//   socket.on('travel_distance', (distance) => {
-//     console.log('Received travel distance:', distance);
-//     setTravelDistance(parseFloat(distance)); // Update the travel distance
-//   });
-//     // Cleanup event listeners on component unmount
-//     return () => {
-//       socket.off('connect');
-//       socket.off('disconnect');
-//       socket.off('travel_distance');
-//     };
-//   }, []);
-
-//   return (
-//     <div>
-//       <div style={{ color: 'white', padding: '50px', textAlign: 'center' }}>
-//         <h1>ESP32 Relay Control</h1>
-
-//         {/* Display relay buttons */}
-//         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-//           {[...Array(8)].map((_, index) => (
-//             <RelayButton key={index} relayNumber={index + 1} socket={socket} />
-//           ))} 
-//         </div>
-
-//         {/* Display connection status */}
-//         <h2 style={{ color: connectionStatus === 'Connected' ? 'green' : 'red' }}>
-//           Status: {connectionStatus}
-//         </h2>
-
-//         {/* Display the travel distance */}
-//         <div>
-//           <h2>Travel Distance</h2>
-//           <DisplayData /> {/* Display the travel distance */}
-//           {/* <p>{!isNaN(travelDistance) ? travelDistance.toFixed(4) : 'N/A'} inches</p> Show the travel distance */}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
-// import './components/style/App.css';
-// import React, { useState, useEffect } from 'react';
-// import io from 'socket.io-client';
-// import RelayButton from './components/relaybuttons';  // Import the RelayButton component
-// import DisplayData from './components/encoderdisplay';
-
-// // Establish a WebSocket connection to the Node.js server
-// const socket = io('http://192.168.8.212:4100');
-
-// function App() {
-//   // State for connection status and data from ESP32
-//   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
-//   const [travelDistance, setTravelDistance] = useState('');
-
-//   // Use useEffect to handle WebSocket events
-//   useEffect(() => {
-//     // On WebSocket connection
-//     socket.on('connect', () => {
-//       setConnectionStatus('Connected');
-//     });
-
-//     // On WebSocket disconnection
-//     socket.on('disconnect', () => {
-//       setConnectionStatus('Disconnected');
-//     });
-
-//     // Listen for data from the ESP32
-//     socket.on('esp32_data', (data) => {
-//       setDataFromESP32(data);
-//     });
-
-//     // Cleanup event listeners on component unmount
-//     return () => {
-//       socket.off('connect');
-//       socket.off('disconnect');
-//       socket.off('esp32_data');
-//     };
-//   }, []);
-
-//   return (
-//     <div>
-//       <div style={{ color: 'white', padding: '50px', textAlign: 'center' }}>
-//         <h1>ESP32 Relay Control</h1>
-
-//         {/* Display relay buttons */}
-//         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-//           {[...Array(8)].map((_, index) => (
-//             <RelayButton key={index} relayNumber={index + 1} socket={socket} />
-//           ))} 
-//         </div>
-
-//         {/* Display connection status */}
-//         <h2 style={{ color: connectionStatus === 'Connected' ? 'green' : 'red' }}>
-//           Status: {connectionStatus}
-//         </h2>
-
-//         {/* Display data from the ESP32 */}
-//         <div className="DisplayData">
-          
-//           <div>
-//             {/* <h2>Raw Serial Data</h2> */}
-//             <DisplayData /> {/* Display the raw serial data */}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
 
 
 import './index.css'
@@ -290,7 +148,11 @@ function App() {
       </div>
 
       {showKeypad && (
-        <NumericKeypad onClose={() => setShowKeypad(false)} onSubmit={handleKeypadSubmit} />
+        <NumericKeypad 
+          onClose={() => setShowKeypad(false)} 
+          onSubmit={handleKeypadSubmit} 
+          allowDecimal={activeInput === "cutLength"}
+        />
       )}
     
 
