@@ -1,9 +1,11 @@
 import React from "react";
 import "./style/InputButton.css";
 
-function InputButton({ label }) {
+function InputButton({ label, onClick }) {
   return (
-    <button className="input-button">{label}</button>
+    <button onClick={onClick} className="input-button">
+      {label}
+    </button>
   );
 }
 

@@ -154,6 +154,7 @@ import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 import IndicatorLight from "./components/IndicatorLight.js";
 import EStopButton from "./components/EStopButton.jsx";
+import NumericKeypad from "./components/NumericKeypad.jsx";
 // import CutLengthInput from "./components/CutLengthInput.jsx";
 // import CutQuantityInput from "./components/CutQuantityInput.jsx";
 // import Heading from './components/Heading.jsx';
@@ -175,40 +176,56 @@ function App() {
 
   const [cutLength, setCutLength] = useState("000.000");
   const [cutQuantity, setCutQuantity] = useState("00000");
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [activeInput, setActiveInput] = useState(null);
   // const [serialData, setTravelDistance] = useState(""); // State to hold raw serial data
   // const [encoderCount, setEncoderCount] = useState(0); // State to hold encoder count
   // const [cutQuantity, setCutQuantity] = useState("");
   // // const [travelDistance, setTravelDistance] = useState(0); // Store travel distance as a string
   // Emit changes to the server
-  useEffect(() => {
-    if (cutLength !== "000.000") {
-      socket.emit("updateCutLength", cutLength);
-    }
-  }, [cutLength]);
+  // useEffect(() => {
+  //   if (cutLength !== "000.000") {
+  //     socket.emit("updateCutLength", cutLength);
+  //   }
+  // }, [cutLength]);
 
-  useEffect(() => {
-    if (cutQuantity !== "00000") {
-      socket.emit("updateCutQuantity", cutQuantity);
-    }
-  }, [cutQuantity]);
+  // useEffect(() => {
+  //   if (cutQuantity !== "00000") {
+  //     socket.emit("updateCutQuantity", cutQuantity);
+  //   }
+  // }, [cutQuantity]);
 
-  const handleCutLengthChange = (e) => {
-    setCutLength(e.target.value);
-  };
+  // const handleCutLengthChange = (e) => {
+  //   setCutLength(e.target.value);
+  // };
 
-  const handleCutQuantityChange = (e) => {
-    setCutQuantity(e.target.value);
-  };
-
-  // const handleInputChange = (e) => {
+  // const handleCutQuantityChange = (e) => {
   //   setCutQuantity(e.target.value);
   // };
 
-  // const sendCutQuantity = () => {
-  //   if (cutQuantity) {
-  //     socket.emit("setCutQuantity", cutQuantity);
-  //   }
-  // };
+  useEffect(() => {
+    // Emit initial values on component mount (optional)
+    socket.emit("initialData", { cutLength, cutQuantity });
+  }, []);
+
+  const handleOpenKeypad = (inputType) => {
+    console.log(`Opening keypad for: ${inputType}`);
+    setActiveInput(inputType);
+    setShowKeypad(true);
+  };
+
+  const handleKeypadSubmit = (value) => {
+    if (activeInput === "cutLength") {
+      setCutLength(value);
+      socket.emit("updateCutLength", value); // Emit the cut length value
+    } else if (activeInput === "cutQuantity") {
+      setCutQuantity(value);
+      socket.emit("updateCutQuantity", value); // Emit the cut quantity value
+    }
+    setActiveInput(null);
+    setShowKeypad(false); // Close the keypad after submitting
+  };
+
 
   // Use useEffect to handle WebSocket events
   useEffect(() => {
@@ -251,11 +268,11 @@ function App() {
           <input
             type="text"
             className="display-input"
-            value={cutLength}
-            onChange={handleCutLengthChange}
+            value={cutLength} readOnly
+            // onChange={handleCutLengthChange}
           />
           </div>
-          <InputButton label="Input Length" />
+          <InputButton label="Input Length" onClick={() => handleOpenKeypad("cutLength")} />
         </div>
         
         <div className="display-box-container">
@@ -264,13 +281,17 @@ function App() {
           <input
             type="text"
             className="display-input"
-            value={cutQuantity}
-            onChange={handleCutQuantityChange}
+            value={cutQuantity} readOnly
+            // onChange={handleCutQuantityChange}
           />
           </div>
-          <InputButton label="Input Quantity" />
+          <InputButton label="Input Quantity" onClick={() => handleOpenKeypad("cutQuantity")} />
         </div>
       </div>
+
+      {showKeypad && (
+        <NumericKeypad onClose={() => setShowKeypad(false)} onSubmit={handleKeypadSubmit} />
+      )}
     
 
       <div className="display-section">
