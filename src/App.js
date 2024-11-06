@@ -3,7 +3,6 @@
 import './index.css'
 // import React from 'react';
 import './App.css';
-// import './global.css';
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client';
 // import Heading from "./components/Heading.jsx";
@@ -13,15 +12,13 @@ import ControlButton from "./components/ControlButton.jsx";
 import IndicatorLight from "./components/IndicatorLight.js";
 import EStopButton from "./components/EStopButton.jsx";
 import NumericKeypad from "./components/NumericKeypad.jsx";
+import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 // import CutLengthInput from "./components/CutLengthInput.jsx";
 // import CutQuantityInput from "./components/CutQuantityInput.jsx";
 // import Heading from './components/Heading.jsx';
 // import './components/CutQuantity'
 // import RelayButton from './components/Relays.jsx';  // Import the RelayButton component
 // import EncoderDisplay from './components/EncoderReadout.jsx';  // Import the DisplayData component
-
-// import InputField from "./components/InputField";
-// import EncoderCalibration from "./components/EncoderCalibration";
 
 
 
@@ -35,7 +32,10 @@ function App() {
   const [cutLength, setCutLength] = useState("000.000");
   const [cutQuantity, setCutQuantity] = useState("00000");
   const [showKeypad, setShowKeypad] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const [activeInput, setActiveInput] = useState(null);
+
   // const [serialData, setTravelDistance] = useState(""); // State to hold raw serial data
   // const [encoderCount, setEncoderCount] = useState(0); // State to hold encoder count
   // const [cutQuantity, setCutQuantity] = useState("");
@@ -61,27 +61,38 @@ function App() {
   //   setCutQuantity(e.target.value);
   // };
 
-  useEffect(() => {
-    // Emit initial values on component mount (optional)
-    socket.emit("initialData", { cutLength, cutQuantity });
-  }, []);
+  // useEffect(() => {
+  //   // Emit initial values on component mount (optional)
+  //   socket.emit("initialData", { cutLength, cutQuantity });
+  // }, []);
 
   const handleOpenKeypad = (inputType) => {
-    console.log(`Opening keypad for: ${inputType}`);
     setActiveInput(inputType);
     setShowKeypad(true);
   };
 
   const handleKeypadSubmit = (value) => {
+    setInputValue(value);
+    setShowKeypad(false);
+    setShowConfirmation(true); // Show confirmation dialog after keypad input
+  };
+
+  const handleConfirm = () => {
     if (activeInput === "cutLength") {
-      setCutLength(value);
-      socket.emit("updateCutLength", value); // Emit the cut length value
+      setCutLength(inputValue);
+      socket.emit("updateCutLength", inputValue);
     } else if (activeInput === "cutQuantity") {
-      setCutQuantity(value);
-      socket.emit("updateCutQuantity", value); // Emit the cut quantity value
+      setCutQuantity(inputValue);
+      socket.emit("updateCutQuantity", inputValue);
     }
+    setShowConfirmation(false);
     setActiveInput(null);
-    setShowKeypad(false); // Close the keypad after submitting
+  };
+
+  const handleCancel = () => {
+    setShowConfirmation(false);
+    setInputValue("");
+    setActiveInput(null);
   };
 
 
@@ -154,6 +165,15 @@ function App() {
           allowDecimal={activeInput === "cutLength"}
         />
       )}
+
+      {showConfirmation && (
+        <ConfirmationDialog
+          value={inputValue}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
+    
     
 
       <div className="display-section">
@@ -181,64 +201,5 @@ function App() {
     </div>
   );
 }
-//   return (
-//     <div className="app">
-//       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
-//       <div className="display-section"> 
-//         <DisplayBox label="Cut Length" value="000.000" />
-//         <InputButton label="Input Length" />
-//         <DisplayBox label="Cut Quantity" value="00000" />
-//         <InputButton label="Input Quantity" />
-//       </div>
-//       <div className="display-section">
-//         <DisplayBox label="Cut Count" value="00000" />
-//         <DisplayBox label="Cut Cycle Time" value="000.00" />
-//         <DisplayBox label="Live Cut Feed" value="000.000" />
-//       </div>
-//       <div className="control-section">
-//   <div className="control-column">
-//     <button className="control-button">Start / Pause</button>
-//     <button className="control-button">Reset</button>
-//     <button className="control-button blue-button">Encoder <br></br> Calibration</button>
-//   </div>
-//   <div className="control-column">
-//     <button className="control-button">Material Forward</button>
-//     <button className="control-button">Manual Shear</button>
-//     <button className="control-button">Screen Unlocked</button>
-
-//     {/* Indicator Lights and E-Stop Button */}
-//     <div className="image-container">
-//       <IndicatorLight label="Load Material" color="yellow" />
-  
-//       </div>
-//       <button className="e-stop-button">E Stop</button>
-//     </div>
-//   </div>
-// </div>
-    
-      
-      
-      
-      
-      /* <div className="control-section">
-        <div className="control-column">
-          <button className="control-button">Start / Pause</button>
-          <button className="control-button">Reset</button>
-          <button className="control-button blue-button">Encoder Calibration</button>
-        </div>
-        <div className="control-column">
-          <button className="control-button">Material Forward</button>
-          <button className="control-button">Manual Shear</button>
-          <button className="control-button">Screen Unlocked</button>
-        </div>
-        <div className="indicator-section">
-          <IndicatorLight label="Load Material" color="yellow" />
-          <IndicatorLight label="ERROR" color="red" />
-          <EStopButton label="E Stop" />
-        </div>
-      </div>
-    </div> */
-//   );
-// }
 
 export default App;
