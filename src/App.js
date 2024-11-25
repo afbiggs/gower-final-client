@@ -6,11 +6,10 @@ import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 import IndicatorLight from "./components/IndicatorLight.js";
-// import EStopButton from "./components/EStopButton.jsx";
 import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 
-const socket = io('http://192.168.1.100:4300');
+const socket = io('http://192.168.1.185:4300');
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
@@ -25,25 +24,22 @@ function App() {
   const [inputValue, setInputValue] = useState("");
   const [activeInput, setActiveInput] = useState(null);
 
-  // Open the keypad for input
   const handleOpenKeypad = (inputType) => {
     setActiveInput(inputType);
     setShowKeypad(true);
   };
 
-  // Handle keypad submission
   const handleKeypadSubmit = (value) => {
     setInputValue(value);
     setShowKeypad(false);
     setShowConfirmation(true);
   };
 
-  // Confirm and update parameters
   const handleConfirm = () => {
     if (activeInput === "cutLength") {
       setCutLength(inputValue);
     } else if (activeInput === "cutQuantity") {
-      setCutQuantity(inputValue);
+      setCutQuantity(inputValue.padStart(5, '0'));
     }
     setShowConfirmation(false);
     setActiveInput(null);
@@ -55,7 +51,6 @@ function App() {
     setActiveInput(null);
   };
 
-  // Send cut parameters to the server
   const handleStart = () => {
     const data = {
       cutLength: parseFloat(cutLength),
@@ -81,13 +76,11 @@ function App() {
     setShowResetConfirmation(false);
   };
 
-  // Handle Material Forward press
   const handleMaterialForwardPress = () => {
     socket.emit("material_forward_control", "ON");
     console.log("Material Forward: ON");
   };
 
-  // Handle Material Forward release
   const handleMaterialForwardRelease = () => {
     socket.emit("material_forward_control", "OFF");
     console.log("Material Forward: OFF");
@@ -103,38 +96,63 @@ function App() {
     console.log("Manual Shear: OFF");
   };
 
-  // Socket.IO event listeners
   useEffect(() => {
     socket.on("connect", () => {
-        setConnectionStatus("Connected");
-        console.log("Connected to server");
+      setConnectionStatus("Connected");
+      console.log("Connected to server");
     });
 
     socket.on("disconnect", () => {
-        setConnectionStatus("Disconnected");
-        console.log("Disconnected from server");
+      setConnectionStatus("Disconnected");
+      console.log("Disconnected from server");
     });
 
-    // Listen for cut_status events from the server
     socket.on("cut_status", (data) => {
-        console.log("Received cut_status:", data);
-        if (data.cutCount !== undefined) {
-            setCutCount(data.cutCount);
-        }
+      console.log("Received cut_status:", data);
+      if (data.cutCount !== undefined) {
+        setCutCount(data.cutCount);
+        setCutQuantity((prevQuantity) => {
+          const newQuantity = parseInt(prevQuantity, 10) - 1;
+          return newQuantity > 0 ? newQuantity.toString().padStart(5, '0') : "00000";
+        });
+      }
     });
 
-    // Cleanup event listeners on component unmount
-    return () => {
-        socket.off("connect");
-        socket.off("disconnect");
-        socket.off("cut_status");
-    };
-}, []);
+  //   // Listen for travel_distance events from the server
+  //   socket.on("travel_distance", (data) => {
+  //     console.log("Received travel_distance:", data);
+  //     if (data.distance !== undefined) {
+  //         const currentDistance = parseFloat(data.distance).toFixed(3);
+  //         setLiveCutFeed(currentDistance);
+
+  //         // Reset the live cut feed to 0 if distance equals cut length
+  //         if (parseFloat(currentDistance) >= parseFloat(cutLength)) {
+  //             setLiveCutFeed("000.000");
+  //         }
+  //     }
+  // });
+
+  // Cleanup event listeners on component unmount
+  return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("cut_status");
+      socket.off("travel_distance");
+  };
+}, [cutLength]); // Dependency on cutLength to ensure accurate resets
+
+
+  //   return () => {
+  //     socket.off("connect");
+  //     socket.off("disconnect");
+  //     socket.off("cut_status");
+  //   };
+  // }, []);
 
   return (
     <div className="app">
       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
-      
+
       <div className="cut-data-section"> 
         <div className="display-box-container">
           <label className="display-label">Cut Length</label>
@@ -208,7 +226,6 @@ function App() {
           <div className="image-container">
             <IndicatorLight label="Load Material" color="yellow" />
           </div>
-          {/* <EStopButton label="E Stop" /> */}
         </div>
       </div>
     </div>
@@ -216,6 +233,232 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+// import './index.css';
+// import './App.css';
+// import React, { useState, useEffect } from 'react';
+// import io from 'socket.io-client';
+// import DisplayBox from "./components/DisplayBox.jsx";
+// import InputButton from "./components/InputButton.jsx";
+// import ControlButton from "./components/ControlButton.jsx";
+// import IndicatorLight from "./components/IndicatorLight.js";
+// // import EStopButton from "./components/EStopButton.jsx";
+// import NumericKeypad from "./components/NumericKeypad.jsx";
+// import ConfirmationDialog from './components/ConfirmationDialog.jsx';
+
+// const socket = io('http://192.168.1.185:4300');
+
+// function App() {
+//   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+//   const [cutLength, setCutLength] = useState("000.000");
+//   const [cutQuantity, setCutQuantity] = useState("00000");
+//   const [cutCount, setCutCount] = useState(0);
+//   const [cutCycleTime, setCutCycleTime] = useState("000.00");
+//   const [liveCutFeed, setLiveCutFeed] = useState("000.000");
+//   const [showKeypad, setShowKeypad] = useState(false);
+//   const [showConfirmation, setShowConfirmation] = useState(false);
+//   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+//   const [inputValue, setInputValue] = useState("");
+//   const [activeInput, setActiveInput] = useState(null);
+
+//   // Open the keypad for input
+//   const handleOpenKeypad = (inputType) => {
+//     setActiveInput(inputType);
+//     setShowKeypad(true);
+//   };
+
+//   // Handle keypad submission
+//   const handleKeypadSubmit = (value) => {
+//     setInputValue(value);
+//     setShowKeypad(false);
+//     setShowConfirmation(true);
+//   };
+
+//   // Confirm and update parameters
+//   const handleConfirm = () => {
+//     if (activeInput === "cutLength") {
+//       setCutLength(inputValue);
+//     } else if (activeInput === "cutQuantity") {
+//       setCutQuantity(inputValue);
+//     }
+//     setShowConfirmation(false);
+//     setActiveInput(null);
+//   };
+
+//   const handleCancel = () => {
+//     setShowConfirmation(false);
+//     setInputValue("");
+//     setActiveInput(null);
+//   };
+
+//   // Send cut parameters to the server
+//   const handleStart = () => {
+//     const data = {
+//       cutLength: parseFloat(cutLength),
+//       cutQuantity: parseInt(cutQuantity, 10)
+//     };
+//     socket.emit("set_cut_parameters", data);
+//     console.log('Parameters sent to server:', data);
+//   };
+
+//   const handleReset = () => {
+//     setShowResetConfirmation(true);
+//   };
+
+//   const confirmReset = () => {
+//     socket.emit("reset_encoder");
+//     console.log('Encoder reset');
+//     setCutLength("000.000");
+//     setCutQuantity("00000");
+//     setShowResetConfirmation(false);
+//   };
+
+//   const cancelReset = () => {
+//     setShowResetConfirmation(false);
+//   };
+
+//   // Handle Material Forward press
+//   const handleMaterialForwardPress = () => {
+//     socket.emit("material_forward_control", "ON");
+//     console.log("Material Forward: ON");
+//   };
+
+//   // Handle Material Forward release
+//   const handleMaterialForwardRelease = () => {
+//     socket.emit("material_forward_control", "OFF");
+//     console.log("Material Forward: OFF");
+//   };
+
+//   const handleManualShearPress = () => {
+//     socket.emit("manual_shear_control", "ON");
+//     console.log("Manual Shear: ON");
+//   };
+
+//   const handleManualShearRelease = () => {
+//     socket.emit("manual_shear_control", "OFF");
+//     console.log("Manual Shear: OFF");
+//   };
+
+//   // Socket.IO event listeners
+//   useEffect(() => {
+//     socket.on("connect", () => {
+//         setConnectionStatus("Connected");
+//         console.log("Connected to server");
+//     });
+
+//     socket.on("disconnect", () => {
+//         setConnectionStatus("Disconnected");
+//         console.log("Disconnected from server");
+//     });
+
+//     // Listen for cut_status events from the server
+//     socket.on("cut_status", (data) => {
+//         console.log("Received cut_status:", data);
+//         if (data.cutCount !== undefined) {
+//             setCutCount(data.cutCount);
+//         }
+//     });
+
+//     // Cleanup event listeners on component unmount
+//     return () => {
+//         socket.off("connect");
+//         socket.off("disconnect");
+//         socket.off("cut_status");
+//     };
+// }, []);
+
+//   return (
+//     <div className="app">
+//       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
+      
+//       <div className="cut-data-section"> 
+//         <div className="display-box-container">
+//           <label className="display-label">Cut Length</label>
+//           <div className="display-box">
+//             <input type="text" className="display-input" value={cutLength} readOnly />
+//           </div>
+//           <InputButton label="Input Length" onClick={() => handleOpenKeypad("cutLength")} />
+//         </div>
+        
+//         <div className="display-box-container">
+//           <label className="display-label">Cut Quantity</label>
+//           <div className="display-box">
+//             <input type="text" className="display-input" value={cutQuantity} readOnly />
+//           </div>
+//           <InputButton label="Input Quantity" onClick={() => handleOpenKeypad("cutQuantity")} />
+//         </div>
+//       </div>
+
+//       {showKeypad && (
+//         <NumericKeypad 
+//           onClose={() => setShowKeypad(false)} 
+//           onSubmit={handleKeypadSubmit} 
+//           allowDecimal={activeInput === "cutLength"}
+//         />
+//       )}
+
+//       {showConfirmation && (
+//         <ConfirmationDialog
+//           value={inputValue}
+//           onConfirm={handleConfirm}
+//           onCancel={handleCancel}
+//         />
+//       )}
+
+//       {showResetConfirmation && (
+//         <ConfirmationDialog
+//           value="Are you sure you want to reset the input values to 0?"
+//           onConfirm={confirmReset}
+//           onCancel={cancelReset}
+//         />
+//       )}
+    
+//       <div className="display-section">
+//         <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, '0')} />
+//         <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, '0')} />
+//         <DisplayBox label="Live Cut Feed" value={String(liveCutFeed).padStart(7, '0')} />
+//       </div>
+
+//       <div className="control-section">
+//         <div className="control-column">
+//           <button className="control-button" onClick={handleStart}>Start</button>
+//           <button className="control-button" onClick={handleReset}>Reset</button>
+//           <button className="control-button blue-button">Encoder<br />Calibration</button>
+//         </div>
+//         <div className="control-column">
+//           <button 
+//             className="control-button" 
+//             onMouseDown={handleMaterialForwardPress} 
+//             onMouseUp={handleMaterialForwardRelease}
+//             onTouchStart={handleMaterialForwardPress} 
+//             onTouchEnd={handleMaterialForwardRelease}
+//           >
+//             Material Forward
+//           </button>
+//           <button className="control-button"
+//             onMouseDown={handleManualShearPress}
+//             onMouseUp={handleManualShearRelease}
+//           >Manual Shear
+//           </button>
+//           <button className="control-button">Screen Unlocked</button>
+//           <div className="image-container">
+//             <IndicatorLight label="Load Material" color="yellow" />
+//           </div>
+//           {/* <EStopButton label="E Stop" /> */}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
 
 
 
