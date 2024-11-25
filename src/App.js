@@ -6,11 +6,11 @@ import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 import IndicatorLight from "./components/IndicatorLight.js";
-import EStopButton from "./components/EStopButton.jsx";
+// import EStopButton from "./components/EStopButton.jsx";
 import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 
-const socket = io('http://192.168.8.214:4300');
+const socket = io('http://192.168.1.100:4300');
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
@@ -208,7 +208,7 @@ function App() {
           <div className="image-container">
             <IndicatorLight label="Load Material" color="yellow" />
           </div>
-          <EStopButton label="E Stop" />
+          {/* <EStopButton label="E Stop" /> */}
         </div>
       </div>
     </div>

@@ -1,4 +1,135 @@
-.image-container  {
+.indicator-container {
+  display: flex;
+  justify-content: center; /* Center the items horizontally */
+  align-items: center; /* Align items vertically */
+  gap: 60px; /* Add space between items */
+  padding: 10px;
+}
+
+.indicator-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon-wrapper {
+  position: relative;
+  width: 70px; /* Uniform size for icons */
+  height: 70px; /* Adjusted to match the E-Stop button size */
+}
+
+.material-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensures the image is not stretched or blurry */
+}
+
+.error-icon {
+  position: relative;
+  width: 149%;
+  height: 140%;
+  object-fit: contain; /* Ensures the image is not stretched or blurry */
+  right: 17px;
+  bottom: 4px;
+}
+
+.overlay {
+  position: absolute;
+  top: 20px; /* Align the overlay exactly on top */
+  left: 0; /* Align the overlay exactly on top */
+  width: 100%;
+  height: 50%;
+  object-fit: contain;
+}
+
+.indicator-label {
+  margin-top: 5px;
+  color: white;
+  font-size:20px;
+  text-align: center;
+}
+
+.estop-button {
+  
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    
+  
+  }
+
+
+
+
+
+
+
+/* .indicator-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+
+}
+
+.indicator-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon-wrapper {
+  position: relative;
+  width: 70px; 
+  height: 50px;
+}
+
+.icon {
+  width: 120%;
+  height: 100%;
+  object-fit: contain; 
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.indicator-label {
+  margin-top: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.estop-button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.indicator-item,
+.estop-button {
+  margin: 0 10px; 
+
+
+
+/* .image-container  {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -17,15 +148,15 @@
     top: 2px;
     align-items: center;
   
-  }
+  } */
 
 
-  
+/*   
   .light {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-  }
+  } */
 /*   
   .yellow {
     background-color: yellow;
@@ -35,8 +166,8 @@
     background-color: red;
   } */
   
-  .light-label {
+  /* .light-label {
     color: white;
     font-size: 14px;
   }
-  
+   */
