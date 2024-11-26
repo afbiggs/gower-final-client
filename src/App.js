@@ -118,19 +118,19 @@ function App() {
       }
     });
 
-  //   // Listen for travel_distance events from the server
-  //   socket.on("travel_distance", (data) => {
-  //     console.log("Received travel_distance:", data);
-  //     if (data.distance !== undefined) {
-  //         const currentDistance = parseFloat(data.distance).toFixed(3);
-  //         setLiveCutFeed(currentDistance);
+    // Listen for travel_distance events from the server
+    socket.on("travel_distance", (data) => {
+      console.log("Received travel_distance:", data);
+      if (data.distance !== undefined) {
+          const currentDistance = parseFloat(data.distance).toFixed(3);
+          setLiveCutFeed(currentDistance);
 
-  //         // Reset the live cut feed to 0 if distance equals cut length
-  //         if (parseFloat(currentDistance) >= parseFloat(cutLength)) {
-  //             setLiveCutFeed("000.000");
-  //         }
-  //     }
-  // });
+          // Reset the live cut feed to 0 if distance equals cut length
+          if (parseFloat(currentDistance) >= parseFloat(cutLength)) {
+              setLiveCutFeed("000.000");
+          }
+      }
+  });
 
   // Cleanup event listeners on component unmount
   return () => {
