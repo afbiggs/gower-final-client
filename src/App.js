@@ -9,7 +9,7 @@ import IndicatorLight from "./components/IndicatorLight.js";
 import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 
-const socket = io('http://192.168.1.185:4300');
+const socket = io('http://192.168.1.228:4300');
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
@@ -17,7 +17,7 @@ function App() {
   const [cutQuantity, setCutQuantity] = useState("00000");
   const [cutCount, setCutCount] = useState(0);
   const [cutCycleTime, setCutCycleTime] = useState("000.00");
-  const [liveCutFeed, setLiveCutFeed] = useState("000.000");
+  const [liveCutFeed, setLiveCutFeed] = useState(0);
   const [showKeypad, setShowKeypad] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
@@ -69,6 +69,8 @@ function App() {
     console.log('Encoder reset');
     setCutLength("000.000");
     setCutQuantity("00000");
+    setCutCount("0000");
+    setLiveCutFeed(0);
     setShowResetConfirmation(false);
   };
 
@@ -118,17 +120,11 @@ function App() {
       }
     });
 
-    // Listen for travel_distance events from the server
-    socket.on("travel_distance", (data) => {
-      console.log("Received travel_distance:", data);
-      if (data.distance !== undefined) {
-          const currentDistance = parseFloat(data.distance).toFixed(3);
-          setLiveCutFeed(currentDistance);
-
-          // Reset the live cut feed to 0 if distance equals cut length
-          if (parseFloat(currentDistance) >= parseFloat(cutLength)) {
-              setLiveCutFeed("000.000");
-          }
+      // Listen for travel_distance updates
+      socket.on('travel_distance', (data) => {
+          if (data.travelDistance !== undefined) {
+              // Parse the travelDistance as a number to avoid type issues
+              setLiveCutFeed(Number(data.travelDistance))
       }
   });
 
@@ -198,7 +194,7 @@ function App() {
       <div className="display-section">
         <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, '0')} />
         <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, '0')} />
-        <DisplayBox label="Live Cut Feed" value={String(liveCutFeed).padStart(7, '0')} />
+        <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, '0')}/>
       </div>
 
       <div className="control-section">
