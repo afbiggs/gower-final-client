@@ -1,11 +1,16 @@
 import React from "react";
 import "./style/EStopButton.css";
 
-function EStopButton({ label }) {
+const EStopButton = ({ isEStopActive, onToggleEStop }) => {
   return (
-    <button className="e-stop-button">{label}</button>
+    <button
+      className={`estop-button ${isEStopActive ? "active" : ""}`}
+      onClick={onToggleEStop}
+    >
+      {isEStopActive ? "Reset E-STOP" : "E-STOP"}
+    </button>
   );
-}
+};
 
 export default EStopButton;
 

@@ -12,17 +12,53 @@
   right: 20px;
 } */
   
+/* 
+.estop-button {
 
-.e-stop-button {
   background-color: red;
   color: white;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  font-size: 16px;
+  width: 120px;
+  height: 120px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   position: absolute;
   bottom: 20px;
-  right: 20px;
+  right: 200px;
+} */
+
+.estop-button {
+  background-color: red;
+  color: white;
+  width: 120px; /* Fixed width */
+  height: 120px; /* Fixed height */
+  
+  border-radius: 50%; /* Makes the button circular */
+  border: none;
+  padding: 0; /* Remove extra padding */
+  font-size: 18px; /* Font size for the text */
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  line-height: normal; /* Prevent vertical stretching of text */
+
+  flex-direction: column; /* Stack the text vertically */
+  justify-content: center; /* Center the text vertically */
+  align-items: center; /* Center the text horizontally */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease-in-out, background-color 0.1s ease;
 }
+
+.estop-button.active {
+  background-color: green; /* Change background for the active state */
+}
+
+.estop-button:hover {
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.estop-button:active {
+  transform: scale(0.95); /* Slight shrink effect when clicked */
+}
+

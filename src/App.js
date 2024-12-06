@@ -5,9 +5,10 @@ import io from 'socket.io-client';
 import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
-import IndicatorLight from "./components/IndicatorLight.js";
+// import IndicatorLight from "./components/IndicatorLight.js";
 import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
+import EStopButton from './components/EStopButton.jsx';
 
 const socket = io('http://192.168.1.228:4300');
 
@@ -25,6 +26,7 @@ function App() {
   const [activeInput, setActiveInput] = useState(null);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
   const [isPaused, setIsPaused] = useState(false); // Track if motor is paused
+  const [isEStopActive, setIsEStopActive] = useState(false); // Track E-STOP state
 
 
   const handleOpenKeypad = (inputType) => {
@@ -110,72 +112,6 @@ function App() {
     }
   };
   
-
-
-  // const handleStartPause = () => {
-  //   if (!isRunning) {
-  //     // Starting the motor
-  //     const data = {
-  //       cutLength: parseFloat(cutLength),
-  //       cutQuantity: parseInt(cutQuantity, 10),
-  //     };
-  
-  //     // Send cut parameters to the server
-  //     socket.emit("set_cut_parameters", data, (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error sending cut parameters:", ack.error);
-  //       } else {
-  //         console.log("Cut parameters sent to server:", data);
-  //       }
-  //     });
-  
-  //     // Start the motor
-  //     socket.emit("start_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error starting motor:", ack.error);
-  //       } else {
-  //         console.log("Motor started.");
-  //       }
-  //     });
-  //   } else {
-  //     // Pausing the motor
-  //     socket.emit("pause_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error pausing motor:", ack.error);
-  //       } else {
-  //         console.log("Motor paused.");
-  //       }
-  //     });
-  //   }
-  
-  //   // Toggle between running and paused states
-  //   setIsRunning(!isRunning);
-  // };
-  
-
-  // // Start or Pause functionality
-  // const handleStartPause = () => {
-  //   if (!isRunning) {
-  //     // Send cut parameters and start motor
-  //     const data = {
-  //       cutLength: parseFloat(cutLength),
-  //       cutQuantity: parseInt(cutQuantity, 10),
-  //     };
-  //     socket.emit("set_cut_parameters", data); // Emit parameters to server
-  //     console.log('Cut parameters sent to server:', data);
-  //     socket.emit("start_motor"); // Start the motor
-  //     console.log('Motor started.');
-  //   } else {
-  //     // Pause the motor
-  //     socket.emit("pause_motor");
-  //     console.log('Motor paused.');
-  
-  //     // Turn off Material Forward Relay when paused
-  //     socket.emit("material_forward_control", "OFF");
-  //     console.log("Material Forward Relay: OFF");
-  //   }
-  //   setIsRunning(!isRunning); // Toggle between running and paused states
-  // };
   
   const handleReset = () => {
     setShowResetConfirmation(true);
@@ -196,33 +132,9 @@ function App() {
     setShowResetConfirmation(false);
   };
   
-
-
-  // const confirmReset = () => {
-  //   // socket.emit("reset_encoder");
-  //   // console.log('Encoder reset');
-  //   setCutLength("000.000");
-  //   setCutQuantity("00000");
-  //   setCutCount("0000");
-  //   setLiveCutFeed(0);
-  //   setIsRunning(false); // Reset running state
-  //   setShowResetConfirmation(false);
-  // };
-
   const cancelReset = () => {
     setShowResetConfirmation(false);
   };
-
-  // const handleMaterialForwardPress = () => {
-  //   socket.emit("material_forward_control", { materialForward: "ON" });
-  //   console.log("Material Forward ON");
-  // };
-  
-  // const handleMaterialForwardRelease = () => {
-  //   socket.emit("material_forward_control", { materialForward: "OFF" });
-  //   console.log("Material Forward OFF");
-  // };
-  
 
   const handleMaterialForwardPress = () => {
     socket.emit("material_forward_control", "ON");
@@ -243,6 +155,22 @@ function App() {
   const handleManualShearRelease = () => {
     socket.emit("manual_shear_control", "OFF");
     console.log("Manual Shear: OFF");
+  };
+
+  const handleEStop = () => {
+    console.log("E-Stop Triggered");
+    socket.emit("e_stop"); // Send the E-Stop command to the server
+  };
+
+  const handleToggleEStop = () => {
+    if (!isEStopActive) {
+      console.log("E-STOP Triggered");
+      socket.emit("e_stop"); // Send the E-Stop command to the server
+    } else {
+      console.log("E-STOP Reset Triggered");
+      socket.emit("reset_e_stop"); // Send the Reset E-Stop command to the server
+    }
+    setIsEStopActive(!isEStopActive); // Toggle the state
   };
 
   useEffect(() => {
@@ -359,7 +287,8 @@ function App() {
           </button>
           <button className="control-button">Screen Unlocked</button>
           <div className="image-container">
-            <IndicatorLight label="Load Material" color="yellow" />
+          <EStopButton isEStopActive={isEStopActive} onToggleEStop={handleToggleEStop} />
+
           </div>
         </div>
       </div>
