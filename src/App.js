@@ -182,8 +182,12 @@ function App() {
   };
 
   const confirmReset = () => {
-    socket.emit("reset_encoder");
-    console.log('Encoder reset');
+    // Send reset command to the server to ensure relays turn off after completing the current cut
+    socket.emit("confirm_reset", { action: "reset" });
+  
+    console.log("Reset command sent to ESP32");
+  
+    // Update UI state
     setCutLength("000.000");
     setCutQuantity("00000");
     setCutCount("0000");
@@ -191,16 +195,41 @@ function App() {
     setIsRunning(false); // Reset running state
     setShowResetConfirmation(false);
   };
+  
+
+
+  // const confirmReset = () => {
+  //   // socket.emit("reset_encoder");
+  //   // console.log('Encoder reset');
+  //   setCutLength("000.000");
+  //   setCutQuantity("00000");
+  //   setCutCount("0000");
+  //   setLiveCutFeed(0);
+  //   setIsRunning(false); // Reset running state
+  //   setShowResetConfirmation(false);
+  // };
 
   const cancelReset = () => {
     setShowResetConfirmation(false);
   };
+
+  // const handleMaterialForwardPress = () => {
+  //   socket.emit("material_forward_control", { materialForward: "ON" });
+  //   console.log("Material Forward ON");
+  // };
+  
+  // const handleMaterialForwardRelease = () => {
+  //   socket.emit("material_forward_control", { materialForward: "OFF" });
+  //   console.log("Material Forward OFF");
+  // };
+  
 
   const handleMaterialForwardPress = () => {
     socket.emit("material_forward_control", "ON");
     console.log("Material Forward: ON");
   };
 
+  // Handle Material Forward release
   const handleMaterialForwardRelease = () => {
     socket.emit("material_forward_control", "OFF");
     console.log("Material Forward: OFF");

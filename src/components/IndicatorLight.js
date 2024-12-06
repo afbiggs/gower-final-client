@@ -126,41 +126,6 @@ import "./style/IndicatorLight.css";
 function IndicatorLight() {
   return (
     <div className="indicator-container">
-      {/* Load Material Icon */}
-      <div className="indicator-item">
-        <div className="icon-wrapper">
-          <img
-            src="/images/load-material-icon.png"
-            alt="load-material"
-            className="material-icon"
-          />
-          <img
-            src="/images/load-material-!.png"
-            alt="load-material-overlay"
-            className="overlay"
-          />
-        </div>
-        <p className="indicator-label">Load Material</p>
-      </div>
-
-      {/* Error Icon */}
-      <div className="indicator-item">
-        <div className="icon-wrapper">
-          <img
-            src="/images/error-icon.png"
-            alt="error"
-            className="error-icon"
-          />
-          <img
-            src="/images/error-!.png"
-            alt="error-overlay"
-            className="overlay"
-          />
-        </div>
-        <p className="indicator-label">Error</p>
-      </div>
-
-      {/* E-Stop Button */}
       <div className="indicator-item">
         <button className="estop-button">E Stop</button>
       </div>
