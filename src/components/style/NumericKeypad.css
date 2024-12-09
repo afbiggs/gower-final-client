@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 254, 254, 0.941);
+  background: rgba(0, 0, 0, 0.7); /* Darkened background for better contrast */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,31 +17,34 @@
   border-radius: 10px;
   text-align: center;
   color: white;
-  width: 250px;
+  width: 300px; /* Adjusted for proper spacing */
+  display: flex;
+  flex-direction: column; /* Ensure vertical alignment */
+  gap: 15px; /* Space between elements */
 }
 
 .keypad-display {
   width: 100%;
   font-size: 24px;
   text-align: right;
-  margin-bottom: 20px;
-  margin-right: 10px;
   padding: 10px;
   border: none;
   background-color: #4d4c53;
   color: white;
   border-radius: 5px;
+  position: relative;
+  z-index: 1; /* Ensure it appears above buttons */
 }
 
 .keypad-buttons {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr); /* Ensure a proper grid layout */
+  gap: 10px; /* Space between buttons */
 }
 
 .keypad-buttons button {
   font-size: 20px;
-  padding: 10px;
+  padding: 15px; /* Increased for better touch targets */
   background: #666;
   color: white;
   border: none;
@@ -51,6 +54,32 @@
 
 .keypad-buttons button:hover {
   background: #777;
+}
+
+.keypad-buttons button:active {
+  background: #555;
+}
+
+.keypad-buttons .clear-button,
+.keypad-buttons .enter-button {
+  grid-column: span 2; /* Span these buttons across two columns */
+  background: #5cb85c;
+}
+
+.clear-button {
+  background-color: #d9534f;
+}
+
+.clear-button:hover {
+  background-color: #c9302c;
+}
+
+.enter-button {
+  background-color: #5cb85c;
+}
+
+.enter-button:hover {
+  background-color: #4cae4c;
 }
 
   

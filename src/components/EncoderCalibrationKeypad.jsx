@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./style/NumericKeypad.css";
+import "./style/EncoderCalibrationKeypad.css";
 
-function NumericKeypad({ onClose, onSubmit, allowDecimal }) {
+function EncoderCalibrationKeypad({ onClose, onSubmit, allowDecimal }) {
   const [inputValue, setInputValue] = useState("");
 
   const handleButtonClick = (value) => {
@@ -18,8 +18,13 @@ function NumericKeypad({ onClose, onSubmit, allowDecimal }) {
   };
 
   const handleSubmit = () => {
-    onSubmit(inputValue);
-    onClose("");
+    const numericValue = parseFloat(inputValue);
+    if (isNaN(numericValue)) {
+      alert("Please enter a valid number.");
+      return;
+    }
+    onSubmit(numericValue);
+    onClose();
   };
 
   const handleOverlayClick = (e) => {
@@ -31,7 +36,12 @@ function NumericKeypad({ onClose, onSubmit, allowDecimal }) {
   return (
     <div className="keypad-overlay" onClick={handleOverlayClick}>
       <div className="keypad">
-        <input type="text" value={inputValue} readOnly className="keypad-display" />
+        <input
+          type="text"
+          value={inputValue}
+          readOnly
+          className="keypad-display"
+        />
         <div className="keypad-buttons">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map((num) => (
             <button key={num} onClick={() => handleButtonClick(num)}>
@@ -50,4 +60,4 @@ function NumericKeypad({ onClose, onSubmit, allowDecimal }) {
   );
 }
 
-export default NumericKeypad;
+export default EncoderCalibrationKeypad;

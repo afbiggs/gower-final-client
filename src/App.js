@@ -6,7 +6,10 @@ import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 // import IndicatorLight from "./components/IndicatorLight.js";
+import EncoderCalibrationPopup from "./components/EncoderCalibrationPopup";
+
 import NumericKeypad from "./components/NumericKeypad.jsx";
+import EncoderCalibrationKeypad from './components/EncoderCalibrationKeypad.jsx';
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
@@ -24,6 +27,8 @@ function App() {
   const [showKeypad, setShowKeypad] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+  const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
+
   const [inputValue, setInputValue] = useState("");
   const [activeInput, setActiveInput] = useState(null);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
@@ -183,6 +188,19 @@ function App() {
     }
   };
 
+  
+
+  const handleOpenCalibration = () => {
+    setShowEncoderCalibration(true);
+  };
+
+  const handleCalibrationSubmit = (newDiameter) => {
+    socket.emit("encoder_calibration", { wheelDiameter: newDiameter });
+    console.log(`Encoder calibration sent: ${newDiameter}`);
+    setShowEncoderCalibration(false);
+  };
+
+
   useEffect(() => {
     socket.on("connect", () => {
       setConnectionStatus("Connected");
@@ -305,7 +323,21 @@ function App() {
           </button>
 
           <button className="control-button" onClick={handleReset}>Reset</button>
-          <button className="control-button blue-button">Encoder<br />Calibration</button>
+          <button
+  className="control-button blue-button"
+  onClick={handleOpenCalibration}
+>
+  Encoder Calibration
+</button>
+
+{showEncoderCalibration && (
+  <EncoderCalibrationPopup
+    onClose={() => setShowEncoderCalibration(false)}
+    onSubmit={handleCalibrationSubmit}
+    defaultDiameter={1.275}
+  />
+)}
+
         </div>
         <div className="control-column">
           <button 
