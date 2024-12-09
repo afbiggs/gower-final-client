@@ -13,7 +13,7 @@ import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
-const socket = io('http://192.168.1.100:4300');
+const socket = io('http://192.168.1.228:4300');
 
 
 
@@ -68,7 +68,7 @@ function App() {
       alert("Reset the E-Stop first before resuming.");
       return;
     }
-
+  
     if (isResumeRequired) {
       // Resuming after E-Stop reset
       socket.emit("resume_motor", (ack) => {
@@ -78,35 +78,27 @@ function App() {
           console.log("Motor resumed after E-Stop reset.");
         }
       });
-      setIsResumeRequired(false);
-      setIsRunning(true);
-      setIsPaused(false);
-    } else if (!isRunning && !isPaused) {
-      // Starting the motor
-      const data = {
-        cutLength: parseFloat(cutLength),
-        cutQuantity: parseInt(cutQuantity, 10),
-      };
-
-      socket.emit("set_cut_parameters", data, (ack) => {
+      setIsResumeRequired(false); // Clear resume requirement
+      setIsRunning(true);         // Mark as running
+      setIsPaused(false);         // Ensure paused state is cleared
+      return;
+    }
+  
+    if (isPaused) {
+      // Resuming the motor after pause
+      socket.emit("resume_motor", (ack) => {
         if (ack && ack.error) {
-          console.error("Error sending cut parameters:", ack.error);
+          console.error("Error resuming motor:", ack.error);
         } else {
-          console.log("Cut parameters sent to server:", data);
+          console.log("Motor resumed.");
         }
       });
-
-      socket.emit("start_motor", (ack) => {
-        if (ack && ack.error) {
-          console.error("Error starting motor:", ack.error);
-        } else {
-          console.log("Motor started.");
-        }
-      });
-
       setIsRunning(true);
       setIsPaused(false);
-    } else if (isRunning && !isPaused) {
+      return;
+    }
+  
+    if (isRunning) {
       // Pausing the motor
       socket.emit("pause_motor", (ack) => {
         if (ack && ack.error) {
@@ -115,23 +107,110 @@ function App() {
           console.log("Motor paused.");
         }
       });
-
       setIsRunning(false);
       setIsPaused(true);
-    } else if (!isRunning && isPaused) {
-      // Resuming the motor
-      socket.emit("resume_motor", (ack) => {
+      return;
+    }
+  
+    if (!isRunning && !isPaused) {
+      // Starting the motor for the first time
+      const data = {
+        cutLength: parseFloat(cutLength),
+        cutQuantity: parseInt(cutQuantity, 10),
+      };
+  
+      socket.emit("set_cut_parameters", data, (ack) => {
         if (ack && ack.error) {
-          console.error("Error resuming motor:", ack.error);
+          console.error("Error sending cut parameters:", ack.error);
         } else {
-          console.log("Motor resumed.");
+          console.log("Cut parameters sent to server:", data);
         }
       });
-
+  
+      socket.emit("start_motor", (ack) => {
+        if (ack && ack.error) {
+          console.error("Error starting motor:", ack.error);
+        } else {
+          console.log("Motor started.");
+        }
+      });
+  
       setIsRunning(true);
       setIsPaused(false);
     }
   };
+  
+  
+
+  // const handleStartPause = () => {
+  //   if (isEStopActive) {
+  //     alert("Reset the E-Stop first before resuming.");
+  //     return;
+  //   }
+
+  //   if (isResumeRequired) {
+  //     // Resuming after E-Stop reset
+  //     socket.emit("resume_motor", (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error resuming motor:", ack.error);
+  //       } else {
+  //         console.log("Motor resumed after E-Stop reset.");
+  //       }
+  //     });
+  //     setIsResumeRequired(false);
+  //     setIsRunning(true);
+  //     setIsPaused(false);
+  //   } else if (!isRunning && !isPaused) {
+  //     // Starting the motor
+  //     const data = {
+  //       cutLength: parseFloat(cutLength),
+  //       cutQuantity: parseInt(cutQuantity, 10),
+  //     };
+
+  //     socket.emit("set_cut_parameters", data, (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error sending cut parameters:", ack.error);
+  //       } else {
+  //         console.log("Cut parameters sent to server:", data);
+  //       }
+  //     });
+
+  //     socket.emit("start_motor", (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error starting motor:", ack.error);
+  //       } else {
+  //         console.log("Motor started.");
+  //       }
+  //     });
+
+  //     setIsRunning(true);
+  //     setIsPaused(false);
+  //   } else if (isRunning && !isPaused) {
+  //     // Pausing the motor
+  //     socket.emit("pause_motor", (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error pausing motor:", ack.error);
+  //       } else {
+  //         console.log("Motor paused.");
+  //       }
+  //     });
+
+  //     setIsRunning(false);
+  //     setIsPaused(true);
+  //   } else if (!isRunning && isPaused) {
+  //     // Resuming the motor
+  //     socket.emit("resume_motor", (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error resuming motor:", ack.error);
+  //       } else {
+  //         console.log("Motor resumed.");
+  //       }
+  //     });
+
+  //     setIsRunning(true);
+  //     setIsPaused(false);
+  //   }
+  // };
 
   const handleReset = () => {
     setShowResetConfirmation(true);
@@ -194,13 +273,13 @@ function App() {
     setShowEncoderCalibration(true);
   };
 
-  const handleCalibrationSubmit = (newCircumference) => {
-    if (newCircumference > 0) {
-      socket.emit('update_wheel_circumference', { wheelCircumference: newCircumference });
-      console.log(`Wheel circumference sent to server: ${newCircumference}`);
+  const handleCalibrationSubmit = (newDiameter) => {
+    if (newDiameter > 0) {
+      socket.emit('update_wheel_diameter', { wheelDiameter: newDiameter });
+      console.log(`Wheel circumference sent to server: ${newDiameter}`);
       setShowEncoderCalibration(false); // Close the popup
     } else {
-      alert('Please enter a valid circumference.');
+      alert('Please enter a valid diameter.');
     }
   };
 
@@ -234,22 +313,44 @@ function App() {
     });
 
     socket.on("e_stop_triggered", () => {
-      setIsEStopActive(true);
-      setIsResumeRequired(true);
-      setIsRunning(false);
-      setIsPaused(false);
-      console.log("E-Stop triggered. Resume required.");
-    });
-
+        setIsEStopActive(true);
+        setIsResumeRequired(true);
+        setIsRunning(false);
+        setIsPaused(false);
+      });
+    
     socket.on("reset_e_stop", () => {
-      setIsEStopActive(false);
-      console.log("E-Stop reset. Waiting for Resume.");
-    });
+        setIsEStopActive(false);
+      });
+    
+    socket.on("pause_motor", () => {
+        setIsRunning(false);
+        setIsPaused(true);
+      });
+    
+    socket.on("resume_motor", () => {
+        setIsRunning(true);
+        setIsPaused(false);
+        setIsResumeRequired(false);
+      });
 
-    socket.on("resume", () => {
-      setIsResumeRequired(false);
-      console.log("Motor resumed.");
-    });
+    // socket.on("e_stop_triggered", () => {
+    //   setIsEStopActive(true);
+    //   setIsResumeRequired(true);
+    //   setIsRunning(false);
+    //   setIsPaused(false);
+    //   console.log("E-Stop triggered. Resume required.");
+    // });
+
+    // socket.on("reset_e_stop", () => {
+    //   setIsEStopActive(false);
+    //   console.log("E-Stop reset. Waiting for Resume.");
+    // });
+
+    // socket.on("resume", () => {
+    //   setIsResumeRequired(false);
+    //   console.log("Motor resumed.");
+    // });
 
     return () => {
       socket.off("connect");
@@ -318,11 +419,13 @@ function App() {
         <div className="control-column">
           <button className="control-button" onClick={handleStartPause}>
             {isEStopActive
-              ? "Reset E-Stop Required"
-              : isResumeRequired
-              ? "Resume"
-              : isRunning
-              ? "Pause"
+               ? "Reset E-Stop Required"
+               : isResumeRequired
+               ? "Resume"
+               : isPaused
+               ? "Resume"
+               : isRunning
+               ? "Pause"
               : "Start"}
           </button>
 
