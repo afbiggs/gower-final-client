@@ -1,56 +1,56 @@
-/* NumericKeypad.css */
 .keypad-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 254, 254, 0.941);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .keypad {
-    background: #333;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-    width: 250px;
-  }
-  
-  .keypad-display {
-    width: 100%;
-    font-size: 24px;
-    text-align: right;
-    margin-bottom: 20px;
-    margin-right: 10px;
-    padding: 10px;
-    border: none;
-    background-color: #4d4c53;
-    color: white;
-    border-radius: 5px;
-  }
-  
-  .keypad-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  
-  .keypad-buttons button {
-    font-size: 20px;
-    padding: 10px;
-    background: #666;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .keypad-buttons button:hover {
-    background: #777;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 254, 254, 0.941);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.keypad {
+  background: #333;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  width: 250px;
+}
+
+.keypad-display {
+  width: 100%;
+  font-size: 24px;
+  text-align: right;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  padding: 10px;
+  border: none;
+  background-color: #4d4c53;
+  color: white;
+  border-radius: 5px;
+}
+
+.keypad-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.keypad-buttons button {
+  font-size: 20px;
+  padding: 10px;
+  background: #666;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.keypad-buttons button:hover {
+  background: #777;
+}
+
   
