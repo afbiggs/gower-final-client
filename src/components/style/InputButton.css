@@ -1,5 +1,5 @@
 .input-button {
-    background-color: #d9d9d9;
+    background-color: #0370be;
     position: absolute;
     right: -300px;
     border: none;
@@ -19,6 +19,6 @@
   }
   
   .input-button:hover {
-    background-color: #777;
+    background-color: #0492f8;
   }
   

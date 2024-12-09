@@ -9,7 +9,7 @@ import ControlButton from "./components/ControlButton.jsx";
 import EncoderCalibrationPopup from "./components/EncoderCalibrationPopup";
 
 import NumericKeypad from "./components/NumericKeypad.jsx";
-import EncoderCalibrationKeypad from './components/EncoderCalibrationKeypad.jsx';
+// import EncoderCalibrationKeypad from './components/EncoderCalibrationKeypad.jsx';
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
@@ -194,10 +194,14 @@ function App() {
     setShowEncoderCalibration(true);
   };
 
-  const handleCalibrationSubmit = (newDiameter) => {
-    socket.emit("encoder_calibration", { wheelDiameter: newDiameter });
-    console.log(`Encoder calibration sent: ${newDiameter}`);
-    setShowEncoderCalibration(false);
+  const handleCalibrationSubmit = (newCircumference) => {
+    if (newCircumference > 0) {
+      socket.emit('update_wheel_circumference', { wheelCircumference: newCircumference });
+      console.log(`Wheel circumference sent to server: ${newCircumference}`);
+      setShowEncoderCalibration(false); // Close the popup
+    } else {
+      alert('Please enter a valid circumference.');
+    }
   };
 
 

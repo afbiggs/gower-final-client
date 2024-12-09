@@ -11,6 +11,8 @@ const EncoderCalibrationPopup = ({ onClose, onSubmit, defaultDiameter }) => {
     setShowKeypad(false);
   };
 
+
+
   const handleOverlayClose = (e) => {
     if (e.target.classList.contains("popup-overlay")) {
       onClose();
