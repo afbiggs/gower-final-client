@@ -48,27 +48,6 @@
   color: #ccc; /* Optional: Change the color for better visual distinction */
 }
 
-/* .cut-data-section .display-input {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  
-} */
-
-/* .display-box {
-  background-color: #4d4c53;
-  border-radius: 5px;
-  padding: 12px;
-  width: 200px;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: white;
-} */
-
-
  .display-box {
   background-color: var(--color-dimgray);
   border-radius: var(--br-8xs);
@@ -109,9 +88,3 @@
   outline: none;
              /* Removes the outline when focused */
 }
-
-/* .display-section {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-} */
