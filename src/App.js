@@ -23,7 +23,7 @@ function App() {
   const [cutLength, setCutLength] = useState("000.000");
   const [cutQuantity, setCutQuantity] = useState("00000");
   const [cutCount, setCutCount] = useState(0);
-  const [cutCycleTime, setCutCycleTime] = useState("000.00");
+  const [cutCycleTime, setCutCycleTime] = useState("00:00:00");
   const [liveCutFeed, setLiveCutFeed] = useState(0);
   const [showKeypad, setShowKeypad] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -69,44 +69,52 @@ function App() {
     setActiveInput(null);
   };
 
+  const formatTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+  
   const startTimer = () => {
-    const startTime = Date.now(); // Record the current time
-    setTimerStartTime(startTime); // Save the timer start time
+    const startTime = Date.now();
+    setTimerStartTime(startTime);
     const newTimer = setInterval(() => {
-      const totalElapsedTime = (Date.now() - startTime) / 1000; // Calculate elapsed time
+      const totalElapsedTime = (Date.now() - startTime) / 1000;
       setElapsedTime(totalElapsedTime); // Save elapsed time for pause/resume
-      setCutCycleTime((totalElapsedTime).toFixed(2).padStart(6, "0")); // Update display
+      setCutCycleTime(formatTime(totalElapsedTime)); // Format and update display
     }, 100);
-    setTimer(newTimer); // Save the interval ID
+    setTimer(newTimer);
   };
   
   const resumeTimer = () => {
-    const resumeTime = Date.now(); // Record the current time
+    const resumeTime = Date.now();
     const offsetTime = elapsedTime * 1000; // Convert elapsed time to milliseconds
-    const newStartTime = resumeTime - offsetTime; // Calculate the adjusted start time
-    setTimerStartTime(newStartTime); // Save the new start time
+    const newStartTime = resumeTime - offsetTime;
+    setTimerStartTime(newStartTime);
     const newTimer = setInterval(() => {
-      const totalElapsedTime = (Date.now() - newStartTime) / 1000; // Calculate elapsed time
-      setElapsedTime(totalElapsedTime); // Save elapsed time for pause/resume
-      setCutCycleTime((totalElapsedTime).toFixed(2).padStart(6, "0")); // Update display
+      const totalElapsedTime = (Date.now() - newStartTime) / 1000;
+      setElapsedTime(totalElapsedTime);
+      setCutCycleTime(formatTime(totalElapsedTime)); // Format and update display
     }, 100);
-    setTimer(newTimer); // Save the interval ID
+    setTimer(newTimer);
   };
   
   const pauseTimer = () => {
     if (timer) {
-      clearInterval(timer); // Stop the timer
+      clearInterval(timer);
     }
-    setTimer(null); // Reset the timer interval ID
+    setTimer(null);
   };
   
   const resetTimer = () => {
     if (timer) {
-      clearInterval(timer); // Stop the timer
+      clearInterval(timer);
     }
-    setTimer(null); // Reset the timer interval ID
-    setElapsedTime(0); // Reset elapsed time
-    setCutCycleTime("000.00"); // Reset the display
+    setTimer(null);
+    setElapsedTime(0);
+    setCutCycleTime("00:00:00"); // Reset the display to hours:minutes:seconds
   };
   
   
@@ -424,22 +432,20 @@ return (
     <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
 
     <div className="cut-data-section">
-      <div className="display-box-container">
-        <label className="display-label">Cut Length</label>
-        <div className="display-box">
-          <input
-            type="text"
-            className="display-input"
-            value={cutLength}
-            readOnly
-          />
-        </div>
-        <InputButton
-          label="Input Length"
-          onClick={() => !isLocked && handleOpenKeypad("cutLength")}
-          disabled={isLocked}
-        />
-      </div>
+    <div className="display-box-container">
+  <label className="display-label">Cut Length</label>
+  <div className="display-box">
+    <span className="display-length">
+      {cutLength}
+      <span className="unit"> in</span>
+    </span>
+  </div>
+  <InputButton
+    label="Input Length"
+    onClick={() => !isLocked && handleOpenKeypad("cutLength")}
+    disabled={isLocked}
+  />
+</div>
 
       <div className="display-box-container">
         <label className="display-label">Cut Quantity</label>

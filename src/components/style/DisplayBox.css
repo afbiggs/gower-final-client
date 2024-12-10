@@ -41,6 +41,12 @@
 }
 
 
+.unit {
+  font-size: 0.8rem; /* Make the "in" smaller */
+  vertical-align: top; /* Align the smaller text slightly higher */
+  margin-left: 2px; /* Add a bit of spacing between the number and "in" */
+  color: #ccc; /* Optional: Change the color for better visual distinction */
+}
 
 /* .cut-data-section .display-input {
   display: flex;
