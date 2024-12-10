@@ -11,6 +11,7 @@ import EncoderCalibrationPopup from "./components/EncoderCalibrationPopup";
 import NumericKeypad from "./components/NumericKeypad.jsx";
 // import EncoderCalibrationKeypad from './components/EncoderCalibrationKeypad.jsx';
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
+import ScreenLockButton from './components/ScreenLockButton.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
 const socket = io('http://192.168.1.228:4300');
@@ -28,11 +29,12 @@ function App() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
-
+  const [wheelDiameter, setWheelDiameter] = useState(1.275); // Default wheel diameter
   const [inputValue, setInputValue] = useState("");
   const [activeInput, setActiveInput] = useState(null);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
   const [isPaused, setIsPaused] = useState(false); // Track if motor is paused
+  const [isLocked, setIsLocked] = useState(false);
   const [isEStopActive, setIsEStopActive] = useState(false); // Track E-STOP state
   const [isResumeRequired, setIsResumeRequired] = useState(false); // Track if Resume is required
 
@@ -254,6 +256,10 @@ function App() {
     console.log("Manual Shear: OFF");
   };
 
+  const handleToggleLock = () => {
+    setIsLocked((prev) => !prev);
+  };
+
   const handleToggleEStop = () => {
     if (!isEStopActive) {
       console.log("E-STOP Triggered");
@@ -363,114 +369,281 @@ function App() {
     };
   }, [cutLength]);
 
-  return (
-    <div className="app">
-      <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
+//   return (
+//     <div className="app">
+//       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
 
-      <div className="cut-data-section"> 
-        <div className="display-box-container">
-          <label className="display-label">Cut Length</label>
-          <div className="display-box">
-            <input type="text" className="display-input" value={cutLength} readOnly />
-          </div>
-          <InputButton label="Input Length" onClick={() => handleOpenKeypad("cutLength")} />
-        </div>
+//       <div className="cut-data-section"> 
+//         <div className="display-box-container">
+//           <label className="display-label">Cut Length</label>
+//           <div className="display-box">
+//             <input type="text" className="display-input" value={cutLength} readOnly />
+//           </div>
+//           <InputButton label="Input Length" onClick={() => handleOpenKeypad("cutLength")} />
+//         </div>
         
-        <div className="display-box-container">
-          <label className="display-label">Cut Quantity</label>
-          <div className="display-box">
-            <input type="text" className="display-input" value={cutQuantity} readOnly />
-          </div>
-          <InputButton label="Input Quantity" onClick={() => handleOpenKeypad("cutQuantity")} />
-        </div>
-      </div>
+//         <div className="display-box-container">
+//           <label className="display-label">Cut Quantity</label>
+//           <div className="display-box">
+//             <input type="text" className="display-input" value={cutQuantity} readOnly />
+//           </div>
+//           <InputButton label="Input Quantity" onClick={() => handleOpenKeypad("cutQuantity")} />
+//         </div>
+//       </div>
 
-      {showKeypad && (
-        <NumericKeypad 
-          onClose={() => setShowKeypad(false)} 
-          onSubmit={handleKeypadSubmit} 
-          allowDecimal={activeInput === "cutLength"}
-        />
-      )}
+//       {showKeypad && (
+//         <NumericKeypad 
+//           onClose={() => setShowKeypad(false)} 
+//           onSubmit={handleKeypadSubmit} 
+//           allowDecimal={activeInput === "cutLength"}
+//         />
+//       )}
 
-      {showConfirmation && (
-        <ConfirmationDialog
-          value={inputValue}
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
+//       {showConfirmation && (
+//         <ConfirmationDialog
+//           value={inputValue}
+//           onConfirm={handleConfirm}
+//           onCancel={handleCancel}
+//         />
+//       )}
 
-      {showResetConfirmation && (
-        <ConfirmationDialog
-          value="Are you sure you want to reset the input values to 0?"
-          onConfirm={confirmReset}
-          onCancel={cancelReset}
-        />
-      )}
+//       {showResetConfirmation && (
+//         <ConfirmationDialog
+//           value="Are you sure you want to reset the input values to 0?"
+//           onConfirm={confirmReset}
+//           onCancel={cancelReset}
+//         />
+//       )}
     
-      <div className="display-section">
-        <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, '0')} />
-        <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, '0')} />
-        <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, '0')}/>
+//       <div className="display-section">
+//         <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, '0')} />
+//         <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, '0')} />
+//         <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, '0')}/>
+//       </div>
+
+//       <div className="control-section">
+//         <div className="control-column">
+//           <button className="control-button" onClick={handleStartPause}>
+//             {isEStopActive
+//                ? "Reset E-Stop Required"
+//                : isResumeRequired
+//                ? "Resume"
+//                : isPaused
+//                ? "Resume"
+//                : isRunning
+//                ? "Pause"
+//               : "Start"}
+//           </button>
+
+//           <button className="control-button" onClick={handleReset}>Reset</button>
+//           <button
+//   className="control-button blue-button"
+//   onClick={handleOpenCalibration}
+// >
+//   Encoder Calibration
+// </button>
+
+// {showEncoderCalibration && (
+//   <EncoderCalibrationPopup
+//     onClose={() => setShowEncoderCalibration(false)}
+//     onSubmit={(newDiameter) => {
+//       setWheelDiameter(newDiameter); // Persist the new diameter
+//       socket.emit('update_wheel_diameter', { wheelDiameter: newDiameter });
+//       console.log(`Wheel diameter updated: ${newDiameter}`);
+//     }}
+//     defaultDiameter={wheelDiameter} // Pass the current value
+//   />
+// )}
+
+//         </div>
+//         <div className="control-column">
+//           <button 
+//             className="control-button" 
+//             onMouseDown={handleMaterialForwardPress} 
+//             onMouseUp={handleMaterialForwardRelease}
+//             onTouchStart={handleMaterialForwardPress} 
+//             onTouchEnd={handleMaterialForwardRelease}
+//           >
+//             Material Forward
+//           </button>
+//           <button className="control-button"
+//             onMouseDown={handleManualShearPress}
+//             onMouseUp={handleManualShearRelease}
+//           >Manual Shear
+//           </button>
+//           <button className="control-button">Screen Unlocked</button>
+//           <div className="image-container">
+//           <EStopButton isEStopActive={isEStopActive} onToggleEStop={handleToggleEStop} />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
+return (
+  <div className="app">
+    <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
+
+    <div className="cut-data-section">
+      <div className="display-box-container">
+        <label className="display-label">Cut Length</label>
+        <div className="display-box">
+          <input
+            type="text"
+            className="display-input"
+            value={cutLength}
+            readOnly
+          />
+        </div>
+        <InputButton
+          label="Input Length"
+          onClick={() => !isLocked && handleOpenKeypad("cutLength")}
+          disabled={isLocked}
+        />
       </div>
 
-      <div className="control-section">
-        <div className="control-column">
-          <button className="control-button" onClick={handleStartPause}>
-            {isEStopActive
-               ? "Reset E-Stop Required"
-               : isResumeRequired
-               ? "Resume"
-               : isPaused
-               ? "Resume"
-               : isRunning
-               ? "Pause"
-              : "Start"}
-          </button>
-
-          <button className="control-button" onClick={handleReset}>Reset</button>
-          <button
-  className="control-button blue-button"
-  onClick={handleOpenCalibration}
->
-  Encoder Calibration
-</button>
-
-{showEncoderCalibration && (
-  <EncoderCalibrationPopup
-    onClose={() => setShowEncoderCalibration(false)}
-    onSubmit={handleCalibrationSubmit}
-    defaultDiameter={1.275}
-  />
-)}
-
+      <div className="display-box-container">
+        <label className="display-label">Cut Quantity</label>
+        <div className="display-box">
+          <input
+            type="text"
+            className="display-input"
+            value={cutQuantity}
+            readOnly
+          />
         </div>
-        <div className="control-column">
-          <button 
-            className="control-button" 
-            onMouseDown={handleMaterialForwardPress} 
-            onMouseUp={handleMaterialForwardRelease}
-            onTouchStart={handleMaterialForwardPress} 
-            onTouchEnd={handleMaterialForwardRelease}
-          >
-            Material Forward
-          </button>
-          <button className="control-button"
-            onMouseDown={handleManualShearPress}
-            onMouseUp={handleManualShearRelease}
-          >Manual Shear
-          </button>
-          <button className="control-button">Screen Unlocked</button>
-          <div className="image-container">
-          <EStopButton isEStopActive={isEStopActive} onToggleEStop={handleToggleEStop} />
-          </div>
+        <InputButton
+          label="Input Quantity"
+          onClick={() => !isLocked && handleOpenKeypad("cutQuantity")}
+          disabled={isLocked}
+        />
+      </div>
+    </div>
+
+    {showKeypad && (
+      <NumericKeypad
+        onClose={() => setShowKeypad(false)}
+        onSubmit={handleKeypadSubmit}
+        allowDecimal={activeInput === "cutLength"}
+      />
+    )}
+
+    {showConfirmation && (
+      <ConfirmationDialog
+        value={inputValue}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
+    {showResetConfirmation && (
+      <ConfirmationDialog
+        value="Are you sure you want to reset the input values to 0?"
+        onConfirm={confirmReset}
+        onCancel={cancelReset}
+      />
+    )}
+
+    <div className="display-section">
+      <DisplayBox
+        label="Cut Count"
+        value={cutCount.toString().padStart(5, "0")}
+      />
+      <DisplayBox
+        label="Cut Cycle Time"
+        value={String(cutCycleTime).padStart(6, "0")}
+      />
+      <DisplayBox
+        label="Live Cut Feed"
+        value={liveCutFeed.toFixed(3).toString().padStart(7, "0")}
+      />
+    </div>
+
+    <div className="control-section">
+      <div className="control-column">
+        <button
+          className="control-button"
+          onClick={!isLocked ? handleStartPause : null}
+          disabled={isLocked}
+        >
+          {isEStopActive
+            ? "Reset E-Stop Required"
+            : isResumeRequired
+            ? "Resume"
+            : isPaused
+            ? "Resume"
+            : isRunning
+            ? "Pause"
+            : "Start"}
+        </button>
+
+        <button
+          className="control-button"
+          onClick={!isLocked ? handleReset : null}
+          disabled={isLocked}
+        >
+          Reset
+        </button>
+        <button
+          className="control-button blue-button"
+          onClick={!isLocked ? handleOpenCalibration : null}
+          disabled={isLocked}
+        >
+          Encoder Calibration
+        </button>
+
+        {showEncoderCalibration && (
+          <EncoderCalibrationPopup
+            onClose={() => setShowEncoderCalibration(false)}
+            onSubmit={(newDiameter) => {
+              setWheelDiameter(newDiameter); // Persist the new diameter
+              socket.emit("update_wheel_diameter", {
+                wheelDiameter: newDiameter,
+              });
+              console.log(`Wheel diameter updated: ${newDiameter}`);
+            }}
+            defaultDiameter={wheelDiameter} // Pass the current value
+          />
+        )}
+      </div>
+      <div className="control-column">
+        <button
+          className="control-button"
+          onMouseDown={!isLocked ? handleMaterialForwardPress : null}
+          onMouseUp={!isLocked ? handleMaterialForwardRelease : null}
+          onTouchStart={!isLocked ? handleMaterialForwardPress : null}
+          onTouchEnd={!isLocked ? handleMaterialForwardRelease : null}
+          disabled={isLocked}
+        >
+          Material Forward
+        </button>
+        <button
+          className="control-button"
+          onMouseDown={!isLocked ? handleManualShearPress : null}
+          onMouseUp={!isLocked ? handleManualShearRelease : null}
+          disabled={isLocked}
+        >
+          Manual Shear
+        </button>
+        <ScreenLockButton
+          isLocked={isLocked}
+          onToggleLock={handleToggleLock}
+        />
+        <div className="image-container">
+          <EStopButton
+            isEStopActive={isEStopActive}
+            onToggleEStop={handleToggleEStop}
+          />
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
-
 export default App;
 
 

@@ -9,6 +9,68 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+.keypad {
+    background: #444;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    width: 320px; /* Adjusted width to ensure consistent alignment */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.keypad-display {
+    width: calc(100% - 20px); /* Prevent overflow by adjusting width */
+    font-size: 24px;
+    text-align: right;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: none;
+    background-color: #555;
+    color: white;
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.keypad-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.keypad-buttons button {
+    font-size: 20px;
+    padding: 10px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.keypad-buttons button:hover {
+    background: #777;
+}
+
+.keypad-buttons button:active {
+    background: #888;
+}
+
+
+
+/* .keypad-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
   }
   
   .keypad {
@@ -56,4 +118,4 @@
   .keypad-buttons button:active {
     background: #888;
   }
-  
+   */
