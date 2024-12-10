@@ -37,6 +37,10 @@ function App() {
   const [isLocked, setIsLocked] = useState(false);
   const [isEStopActive, setIsEStopActive] = useState(false); // Track E-STOP state
   const [isResumeRequired, setIsResumeRequired] = useState(false); // Track if Resume is required
+  const [timer, setTimer] = useState(null);
+  const [timerStartTime, setTimerStartTime] = useState(0); // Start time for timer
+  const [elapsedTime, setElapsedTime] = useState(0); // Accumulated time for timer
+
 
   const handleOpenKeypad = (inputType) => {
     setActiveInput(inputType);
@@ -65,6 +69,47 @@ function App() {
     setActiveInput(null);
   };
 
+  const startTimer = () => {
+    const startTime = Date.now(); // Record the current time
+    setTimerStartTime(startTime); // Save the timer start time
+    const newTimer = setInterval(() => {
+      const totalElapsedTime = (Date.now() - startTime) / 1000; // Calculate elapsed time
+      setElapsedTime(totalElapsedTime); // Save elapsed time for pause/resume
+      setCutCycleTime((totalElapsedTime).toFixed(2).padStart(6, "0")); // Update display
+    }, 100);
+    setTimer(newTimer); // Save the interval ID
+  };
+  
+  const resumeTimer = () => {
+    const resumeTime = Date.now(); // Record the current time
+    const offsetTime = elapsedTime * 1000; // Convert elapsed time to milliseconds
+    const newStartTime = resumeTime - offsetTime; // Calculate the adjusted start time
+    setTimerStartTime(newStartTime); // Save the new start time
+    const newTimer = setInterval(() => {
+      const totalElapsedTime = (Date.now() - newStartTime) / 1000; // Calculate elapsed time
+      setElapsedTime(totalElapsedTime); // Save elapsed time for pause/resume
+      setCutCycleTime((totalElapsedTime).toFixed(2).padStart(6, "0")); // Update display
+    }, 100);
+    setTimer(newTimer); // Save the interval ID
+  };
+  
+  const pauseTimer = () => {
+    if (timer) {
+      clearInterval(timer); // Stop the timer
+    }
+    setTimer(null); // Reset the timer interval ID
+  };
+  
+  const resetTimer = () => {
+    if (timer) {
+      clearInterval(timer); // Stop the timer
+    }
+    setTimer(null); // Reset the timer interval ID
+    setElapsedTime(0); // Reset elapsed time
+    setCutCycleTime("000.00"); // Reset the display
+  };
+  
+  
   const handleStartPause = () => {
     if (isEStopActive) {
       alert("Reset the E-Stop first before resuming.");
@@ -72,7 +117,6 @@ function App() {
     }
   
     if (isResumeRequired) {
-      // Resuming after E-Stop reset
       socket.emit("resume_motor", (ack) => {
         if (ack && ack.error) {
           console.error("Error resuming motor:", ack.error);
@@ -80,14 +124,14 @@ function App() {
           console.log("Motor resumed after E-Stop reset.");
         }
       });
-      setIsResumeRequired(false); // Clear resume requirement
-      setIsRunning(true);         // Mark as running
-      setIsPaused(false);         // Ensure paused state is cleared
+      setIsResumeRequired(false);
+      setIsRunning(true);
+      setIsPaused(false);
+      resumeTimer(); // Resume the timer from where it was paused
       return;
     }
   
     if (isPaused) {
-      // Resuming the motor after pause
       socket.emit("resume_motor", (ack) => {
         if (ack && ack.error) {
           console.error("Error resuming motor:", ack.error);
@@ -97,11 +141,11 @@ function App() {
       });
       setIsRunning(true);
       setIsPaused(false);
+      resumeTimer(); // Resume the timer from where it was paused
       return;
     }
   
     if (isRunning) {
-      // Pausing the motor
       socket.emit("pause_motor", (ack) => {
         if (ack && ack.error) {
           console.error("Error pausing motor:", ack.error);
@@ -111,11 +155,11 @@ function App() {
       });
       setIsRunning(false);
       setIsPaused(true);
+      pauseTimer(); // Pause the timer
       return;
     }
   
     if (!isRunning && !isPaused) {
-      // Starting the motor for the first time
       const data = {
         cutLength: parseFloat(cutLength),
         cutQuantity: parseInt(cutQuantity, 10),
@@ -139,17 +183,19 @@ function App() {
   
       setIsRunning(true);
       setIsPaused(false);
+      startTimer(); // Start the timer
     }
   };
   
-  
+
+
 
   // const handleStartPause = () => {
   //   if (isEStopActive) {
   //     alert("Reset the E-Stop first before resuming.");
   //     return;
   //   }
-
+  
   //   if (isResumeRequired) {
   //     // Resuming after E-Stop reset
   //     socket.emit("resume_motor", (ack) => {
@@ -159,35 +205,29 @@ function App() {
   //         console.log("Motor resumed after E-Stop reset.");
   //       }
   //     });
-  //     setIsResumeRequired(false);
-  //     setIsRunning(true);
+  //     setIsResumeRequired(false); // Clear resume requirement
+  //     setIsRunning(true);         // Mark as running
   //     setIsPaused(false);
-  //   } else if (!isRunning && !isPaused) {
-  //     // Starting the motor
-  //     const data = {
-  //       cutLength: parseFloat(cutLength),
-  //       cutQuantity: parseInt(cutQuantity, 10),
-  //     };
-
-  //     socket.emit("set_cut_parameters", data, (ack) => {
+  //     resumeTimer();         // Ensure paused state is cleared
+  //     return;
+  //   }
+  
+  //   if (isPaused) {
+  //     // Resuming the motor after pause
+  //     socket.emit("resume_motor", (ack) => {
   //       if (ack && ack.error) {
-  //         console.error("Error sending cut parameters:", ack.error);
+  //         console.error("Error resuming motor:", ack.error);
   //       } else {
-  //         console.log("Cut parameters sent to server:", data);
+  //         console.log("Motor resumed.");
   //       }
   //     });
-
-  //     socket.emit("start_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error starting motor:", ack.error);
-  //       } else {
-  //         console.log("Motor started.");
-  //       }
-  //     });
-
   //     setIsRunning(true);
   //     setIsPaused(false);
-  //   } else if (isRunning && !isPaused) {
+  //     resumeTimer();
+  //     return;
+  //   }
+  
+  //   if (isRunning) {
   //     // Pausing the motor
   //     socket.emit("pause_motor", (ack) => {
   //       if (ack && ack.error) {
@@ -196,23 +236,42 @@ function App() {
   //         console.log("Motor paused.");
   //       }
   //     });
-
   //     setIsRunning(false);
   //     setIsPaused(true);
-  //   } else if (!isRunning && isPaused) {
-  //     // Resuming the motor
-  //     socket.emit("resume_motor", (ack) => {
+  //     pauseTimer();
+  //     return;
+  //   }
+  
+  //   if (!isRunning && !isPaused) {
+  //     // Starting the motor for the first time
+  //     const data = {
+  //       cutLength: parseFloat(cutLength),
+  //       cutQuantity: parseInt(cutQuantity, 10),
+  //     };
+  
+  //     socket.emit("set_cut_parameters", data, (ack) => {
   //       if (ack && ack.error) {
-  //         console.error("Error resuming motor:", ack.error);
+  //         console.error("Error sending cut parameters:", ack.error);
   //       } else {
-  //         console.log("Motor resumed.");
+  //         console.log("Cut parameters sent to server:", data);
   //       }
   //     });
-
+  
+  //     socket.emit("start_motor", (ack) => {
+  //       if (ack && ack.error) {
+  //         console.error("Error starting motor:", ack.error);
+  //       } else {
+  //         console.log("Motor started.");
+  //       }
+  //     });
+  
   //     setIsRunning(true);
   //     setIsPaused(false);
+  //     startTimer(); // Start the timer
   //   }
   // };
+  
+  
 
   const handleReset = () => {
     setShowResetConfirmation(true);
@@ -227,6 +286,7 @@ function App() {
     setCutQuantity("00000");
     setCutCount("0000");
     setLiveCutFeed(0);
+    resetTimer(); // Reset the timer
     setIsRunning(false); // Reset running state
     setShowResetConfirmation(false);
   };
@@ -266,6 +326,7 @@ function App() {
       socket.emit("e_stop");
       setIsEStopActive(true);
       setIsResumeRequired(true);
+      pauseTimer(); // Pause timer on E-STOP
     } else {
       console.log("E-STOP Reset Triggered");
       socket.emit("reset_e_stop");
@@ -307,6 +368,10 @@ function App() {
         setCutCount(data.cutCount);
         setCutQuantity((prevQuantity) => {
           const newQuantity = parseInt(prevQuantity, 10) - 1;
+          if (newQuantity <= 0) {
+            resetTimer(); // Stop timer when quantity is reached
+            return "00000";
+          }
           return newQuantity > 0 ? newQuantity.toString().padStart(5, '0') : "00000";
         });
       }
@@ -340,23 +405,7 @@ function App() {
         setIsResumeRequired(false);
       });
 
-    // socket.on("e_stop_triggered", () => {
-    //   setIsEStopActive(true);
-    //   setIsResumeRequired(true);
-    //   setIsRunning(false);
-    //   setIsPaused(false);
-    //   console.log("E-Stop triggered. Resume required.");
-    // });
-
-    // socket.on("reset_e_stop", () => {
-    //   setIsEStopActive(false);
-    //   console.log("E-Stop reset. Waiting for Resume.");
-    // });
-
-    // socket.on("resume", () => {
-    //   setIsResumeRequired(false);
-    //   console.log("Motor resumed.");
-    // });
+    
 
     return () => {
       socket.off("connect");
@@ -368,120 +417,6 @@ function App() {
       socket.off("resume");
     };
   }, [cutLength]);
-
-//   return (
-//     <div className="app">
-//       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
-
-//       <div className="cut-data-section"> 
-//         <div className="display-box-container">
-//           <label className="display-label">Cut Length</label>
-//           <div className="display-box">
-//             <input type="text" className="display-input" value={cutLength} readOnly />
-//           </div>
-//           <InputButton label="Input Length" onClick={() => handleOpenKeypad("cutLength")} />
-//         </div>
-        
-//         <div className="display-box-container">
-//           <label className="display-label">Cut Quantity</label>
-//           <div className="display-box">
-//             <input type="text" className="display-input" value={cutQuantity} readOnly />
-//           </div>
-//           <InputButton label="Input Quantity" onClick={() => handleOpenKeypad("cutQuantity")} />
-//         </div>
-//       </div>
-
-//       {showKeypad && (
-//         <NumericKeypad 
-//           onClose={() => setShowKeypad(false)} 
-//           onSubmit={handleKeypadSubmit} 
-//           allowDecimal={activeInput === "cutLength"}
-//         />
-//       )}
-
-//       {showConfirmation && (
-//         <ConfirmationDialog
-//           value={inputValue}
-//           onConfirm={handleConfirm}
-//           onCancel={handleCancel}
-//         />
-//       )}
-
-//       {showResetConfirmation && (
-//         <ConfirmationDialog
-//           value="Are you sure you want to reset the input values to 0?"
-//           onConfirm={confirmReset}
-//           onCancel={cancelReset}
-//         />
-//       )}
-    
-//       <div className="display-section">
-//         <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, '0')} />
-//         <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, '0')} />
-//         <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, '0')}/>
-//       </div>
-
-//       <div className="control-section">
-//         <div className="control-column">
-//           <button className="control-button" onClick={handleStartPause}>
-//             {isEStopActive
-//                ? "Reset E-Stop Required"
-//                : isResumeRequired
-//                ? "Resume"
-//                : isPaused
-//                ? "Resume"
-//                : isRunning
-//                ? "Pause"
-//               : "Start"}
-//           </button>
-
-//           <button className="control-button" onClick={handleReset}>Reset</button>
-//           <button
-//   className="control-button blue-button"
-//   onClick={handleOpenCalibration}
-// >
-//   Encoder Calibration
-// </button>
-
-// {showEncoderCalibration && (
-//   <EncoderCalibrationPopup
-//     onClose={() => setShowEncoderCalibration(false)}
-//     onSubmit={(newDiameter) => {
-//       setWheelDiameter(newDiameter); // Persist the new diameter
-//       socket.emit('update_wheel_diameter', { wheelDiameter: newDiameter });
-//       console.log(`Wheel diameter updated: ${newDiameter}`);
-//     }}
-//     defaultDiameter={wheelDiameter} // Pass the current value
-//   />
-// )}
-
-//         </div>
-//         <div className="control-column">
-//           <button 
-//             className="control-button" 
-//             onMouseDown={handleMaterialForwardPress} 
-//             onMouseUp={handleMaterialForwardRelease}
-//             onTouchStart={handleMaterialForwardPress} 
-//             onTouchEnd={handleMaterialForwardRelease}
-//           >
-//             Material Forward
-//           </button>
-//           <button className="control-button"
-//             onMouseDown={handleManualShearPress}
-//             onMouseUp={handleManualShearRelease}
-//           >Manual Shear
-//           </button>
-//           <button className="control-button">Screen Unlocked</button>
-//           <div className="image-container">
-//           <EStopButton isEStopActive={isEStopActive} onToggleEStop={handleToggleEStop} />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
 
 
 return (
