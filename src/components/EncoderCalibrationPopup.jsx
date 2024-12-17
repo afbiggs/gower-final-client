@@ -3,7 +3,7 @@ import EncoderCalibrationKeypad from "./EncoderCalibrationKeypad";
 import "./style/EncoderCalibrationPopup.css";
 
 const EncoderCalibrationPopup = ({ onClose, onSubmit, defaultDiameter }) => {
-  const [wheelDiameter, setWheelDiameter] = useState(defaultDiameter || 1.275); // Initialize with default or fallback value
+  const [wheelDiameter, setWheelDiameter] = useState(defaultDiameter || 4.00); // Initialize with default or fallback value
   const [showKeypad, setShowKeypad] = useState(false);
 
   // Update the local state when the default diameter changes (optional safety check)
