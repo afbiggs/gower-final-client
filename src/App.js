@@ -11,9 +11,9 @@ import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import ScreenLockButton from './components/ScreenLockButton.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
-// const socket = io('http://192.168.4.1:4300');
+const socket = io('http://192.168.1.156:4300');
 
-const socket = io('http://192.168.1.185')
+// const socket = io('http://127.0.0.1:4300')
 
 
 
@@ -29,6 +29,7 @@ function App() {
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
   const [wheelDiameter, setWheelDiameter] = useState(4.00); // Default wheel diameter
+  const [shearDelay, setShearDelay] = useState(6.00);
   const [inputValue, setInputValue] = useState("");
   const [activeInput, setActiveInput] = useState(null);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
@@ -529,11 +530,41 @@ function App() {
             Reset
           </button>
           <button
+  className="control-button blue-button"
+  onClick={!isLocked ? handleOpenCalibration : null}
+  disabled={isLocked}
+>
+  Calibration
+</button>
+
+{showEncoderCalibration && (
+  <EncoderCalibrationPopup
+    onClose={() => setShowEncoderCalibration(false)}
+    onSubmit={(calibration) => {
+      // Persist the new calibration values
+      setWheelDiameter(calibration.wheelDiameter);
+      setShearDelay(calibration.shearDelay);
+
+      // Emit the entire calibration object to the server
+      socket.emit("update_calibration", {
+        calibration, // Send the calibration object
+      });
+
+      console.log(`Calibration updated: ${JSON.stringify(calibration)}`);
+    }}
+    defaultCalibration={{
+      wheelDiameter,
+      shearDelay, // Pass the current shear delay value
+    }}
+  />
+)}
+
+          {/* <button
             className="control-button blue-button"
             onClick={!isLocked ? handleOpenCalibration : null}
             disabled={isLocked}
           >
-            Encoder Calibration
+            Calibration
           </button>
   
           {showEncoderCalibration && (
@@ -548,7 +579,7 @@ function App() {
               }}
               defaultDiameter={wheelDiameter} // Pass the current value
             />
-          )}
+          )} */}
         </div>
         <div className="control-column">
           <button
