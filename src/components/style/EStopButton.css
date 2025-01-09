@@ -2,8 +2,8 @@
   position: relative; /* Set position relative to allow absolute positioning for :after */
   background-color: red;
   color: white;
-  width: 120px; /* Fixed width */
-  height: 120px; /* Fixed height */
+  width: 80px; /* Fixed width */
+  height: 80px; /* Fixed height */
   left: 100px;
   
   border-radius: 50%; /* Makes the button circular */

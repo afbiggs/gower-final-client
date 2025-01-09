@@ -14,11 +14,14 @@
   --font-inter: 'Inter', sans-serif;
 }
 
+
 body {
   margin: 0;
+  overflow: hidden; /* Disables scrollbars */
   background-color: var(--color-background);
   font-family: Arial, sans-serif;
   color: white;
+  touch-action: manipulation; /* Optimizes for touchscreen use */
 }
 
 .app {
@@ -46,4 +49,15 @@ body {
   margin-bottom: 20px;
 }
 
+/* Remove button highlight on focus or active */
+button {
+  outline: none; /* Removes the focus outline */
+  user-select: none; /* Prevents text selection */
+  -webkit-tap-highlight-color: transparent; /* Removes touch highlight */
+}
 
+/* Optional: Disable active state visual feedback */
+button:active {
+  background-color: inherit; /* Ensure no active background change */
+  color: inherit; /* Ensure no active text color change */
+}
