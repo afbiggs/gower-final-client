@@ -11,9 +11,9 @@ import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import ScreenLockButton from './components/ScreenLockButton.jsx';
 import EStopButton from './components/EStopButton.jsx';
 
-const socket = io('http://192.168.1.156:4300');
+// const socket = io('http://192.168.1.156:4300');
 
-// const socket = io('http://192.168.4.1:4300')
+const socket = io('http://192.168.4.1:4300');
 
 
 
