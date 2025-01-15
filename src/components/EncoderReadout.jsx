@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
 
-// Connect to the Socket.IO server
-const socket = io('http://192.168.8.212:4100'); // Ensure the IP and port are correct
 
 function EncoderDisplay() {
   const [travelDistance, setTravelDistance] = useState(); // State to store travel distance

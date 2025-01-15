@@ -3,7 +3,6 @@ import DisplayBox from "./DisplayBox";
 import InputButton from "./InputButton";
 import io from 'socket.io-client';
 
-const socket = io('http://192.168.8.212:4100'); // Ensure the IP and port are correct
 
 function CutQuantity() {
   const [cutQuantity, setCutQuantity] = useState('');
