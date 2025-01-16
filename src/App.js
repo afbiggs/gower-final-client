@@ -48,9 +48,13 @@ function App() {
   };
 
   const handleKeypadSubmit = (value) => {
-    setInputValue(value);
+    if (activeInput === "cutLength") {
+      setCutLength(value);
+    } else if (activeInput === "cutQuantity") {
+      setCutQuantity(value);
+    }
+
     setShowKeypad(false);
-    setShowConfirmation(true);
   };
 
   const handleConfirm = () => {
@@ -117,86 +121,6 @@ function App() {
     setCutCycleTime("00:00:00"); // Reset the displayed timer
   };
   
-
-//   const handleStartPause = () => {
-//     if (isEStopActive) {
-//         alert("Reset the E-Stop first before resuming.");
-//         return;
-//     }
-
-//     if (isResumeRequired) {
-//         socket.emit("resume_motor", (ack) => {
-//             if (ack && ack.error) {
-//                 console.error("Error resuming motor:", ack.error);
-//             } else {
-//                 console.log("Motor resumed after E-Stop reset.");
-//             }
-//         });
-//         setIsResumeRequired(false);
-//         setIsRunning(true);
-//         setIsPaused(false);
-//         resumeTimer(); // Resume the timer from where it was paused
-//         return;
-//     }
-
-//     if (!isRunning && !isPaused && !isEStopActive && !isResumeRequired) {
-//         // Ensure that starting only happens under specific conditions
-//         const data = {
-//             cutLength: parseFloat(cutLength),
-//             cutQuantity: parseInt(cutQuantity, 10),
-//         };
-
-//         socket.emit("set_cut_parameters", data, (ack) => {
-//             if (ack && ack.error) {
-//                 console.error("Error sending cut parameters:", ack.error);
-//             } else {
-//                 console.log("Cut parameters sent to server:", data);
-//             }
-//         });
-
-//         socket.emit("start_motor", (ack) => {
-//             if (ack && ack.error) {
-//                 console.error("Error starting motor:", ack.error);
-//             } else {
-//                 console.log("Motor started.");
-//             }
-//         });
-
-//         setIsRunning(true);
-//         setIsPaused(false);
-//         startTimer(); // Start the timer
-//         return;
-//     }
-
-//     if (isPaused) {
-//         socket.emit("resume_motor", (ack) => {
-//             if (ack && ack.error) {
-//                 console.error("Error resuming motor:", ack.error);
-//             } else {
-//                 console.log("Motor resumed.");
-//             }
-//         });
-//         setIsRunning(true);
-//         setIsPaused(false);
-//         resumeTimer(); // Resume the timer from where it was paused
-//         return;
-//     }
-
-//     if (isRunning) {
-//         socket.emit("pause_motor", (ack) => {
-//             if (ack && ack.error) {
-//                 console.error("Error pausing motor:", ack.error);
-//             } else {
-//                 console.log("Motor paused.");
-//             }
-//         });
-//         setIsRunning(false);
-//         setIsPaused(true);
-//         pauseTimer(); // Pause the timer
-//         return;
-//     }
-// };
-
 
 const handleStartPause = () => {
   if (isEStopActive) {
@@ -274,150 +198,6 @@ const handleStartPause = () => {
 };
 
 
-
-
-
-
-
-
-// const handleStartPause = () => {
-//   if (isRunning) {
-//       socket.emit("pause_motor", (ack) => {
-//           if (ack && ack.error) {
-//               console.error("Error pausing motor:", ack.error);
-//           } else {
-//               console.log("Motor paused.");
-//           }
-//       });
-//       setIsRunning(false);
-//       setIsPaused(true);
-//       pauseTimer(); // Pause the timer
-//   } else if (isPaused) {
-//       socket.emit("resume_motor", (ack) => {
-//           if (ack && ack.error) {
-//               console.error("Error resuming motor:", ack.error);
-//           } else {
-//               console.log("Motor resumed.");
-//           }
-//       });
-//       setIsRunning(true);
-//       setIsPaused(false);
-//       startTimer(); // Resume the timer
-//   } else {
-//       const data = {
-//           cutLength: parseFloat(cutLength),
-//           cutQuantity: parseInt(cutQuantity, 10),
-//       };
-
-//       socket.emit("set_cut_parameters", data, (ack) => {
-//           if (ack && ack.error) {
-//               console.error("Error sending cut parameters:", ack.error);
-//           } else {
-//               console.log("Cut parameters sent:", data);
-//           }
-//       });
-
-//       socket.emit("start_motor", (ack) => {
-//           if (ack && ack.error) {
-//               console.error("Error starting motor:", ack.error);
-//           } else {
-//               console.log("Motor started.");
-//           }
-//       });
-
-//       setIsRunning(true);
-//       setIsPaused(false);
-//       startTimer(); // Start the timer
-//   }
-// };
-
-
-
-
-
-
-
-
-  
-  // const handleStartPause = () => {
-  //   if (isEStopActive) {
-  //     alert("Reset the E-Stop first before resuming.");
-  //     return;
-  //   }
-  
-  //   if (isResumeRequired) {
-  //     socket.emit("resume_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error resuming motor:", ack.error);
-  //       } else {
-  //         console.log("Motor resumed after E-Stop reset.");
-  //       }
-  //     });
-  //     setIsResumeRequired(false);
-  //     setIsRunning(true);
-  //     setIsPaused(false);
-  //     resumeTimer(); // Resume the timer from where it was paused
-  //     return;
-  //   }
-  
-  //   if (isPaused) {
-  //     socket.emit("resume_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error resuming motor:", ack.error);
-  //       } else {
-  //         console.log("Motor resumed.");
-  //       }
-  //     });
-  //     setIsRunning(true);
-  //     setIsPaused(false);
-  //     resumeTimer(); // Resume the timer from where it was paused
-  //     return;
-  //   }
-  
-  //   if (isRunning) {
-  //     socket.emit("pause_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error pausing motor:", ack.error);
-  //       } else {
-  //         console.log("Motor paused.");
-  //       }
-  //     });
-  //     setIsRunning(false);
-  //     setIsPaused(true);
-  //     pauseTimer(); // Pause the timer
-  //     return;
-  //   }
-  
-  //   if (!isRunning && !isPaused) {
-  //     const data = {
-  //       cutLength: parseFloat(cutLength),
-  //       cutQuantity: parseInt(cutQuantity, 10),
-  //     };
-  
-  //     socket.emit("set_cut_parameters", data, (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error sending cut parameters:", ack.error);
-  //       } else {
-  //         console.log("Cut parameters sent to server:", data);
-  //       }
-  //     });
-  
-  //     socket.emit("start_motor", (ack) => {
-  //       if (ack && ack.error) {
-  //         console.error("Error starting motor:", ack.error);
-  //       } else {
-  //         console.log("Motor started.");
-  //       }
-  //     });
-  
-  //     setIsRunning(true);
-  //     setIsPaused(false);
-  //     startTimer(); // Start the timer
-  //   }
-  // };
-  
-  
-
   const handleReset = () => {
     socket.emit("confirm_reset", { action: "reset" });
     console.log("Reset command sent.");
@@ -436,25 +216,6 @@ const handleStartPause = () => {
 
     alert("Machine reset successfully!");
 };
-
-
-  // const confirmReset = () => {
-  //   socket.emit("confirm_reset", { action: "reset" });
-  //   console.log("Reset command sent to ESP32");
-    
-  //   resetTimer(); // Stop and reset the timer
-    
-  //   // Reset other states
-  //   setCutLength("000.000");
-  //   setCutQuantity("00000");
-  //   setCutCount(0);
-  //   setLiveCutFeed(0);
-  //   setIsRunning(false);
-  //   setIsPaused(false);
-  //   setIsResumeRequired(false);
-  
-  //   setShowResetConfirmation(false);
-  // };
 
   const confirmReset = () => {
     socket.emit("confirm_reset", { action: "reset" });
@@ -563,23 +324,6 @@ const handleStartPause = () => {
       }
   });
 
-    // socket.on("cut_status", (data) => {
-    //   console.log("Received cut_status:", data);
-    //   if (data.cutCount !== undefined) {
-    //     setCutCount(data.cutCount);
-    //     setCutQuantity((prevQuantity) => {
-    //       const newQuantity = parseInt(prevQuantity, 10) - 1;
-    //       if (newQuantity <= 0) {
-    //         resetTimer(); // Stop timer when quantity reaches zero
-    //         return "00000";
-    //       }
-    //       return newQuantity.toString().padStart(5, "0");
-    //       // return newQuantity > 0 ? newQuantity.toString().padStart(5, '0') : "00000";
-    //     });
-    //   }
-    // });
-    
-
     socket.on("travel_distance", (data) => {
       if (data.travelDistance !== undefined) {
         setLiveCutFeed(Number(data.travelDistance));
@@ -685,13 +429,13 @@ const handleStartPause = () => {
         />
       )}
   
-      {showConfirmation && (
+      {/* {showConfirmation && (
         <ConfirmationDialog
           value={inputValue}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
         />
-      )}
+      )} */}
   
       {showResetConfirmation && (
         <ConfirmationDialog
