@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DisplayBox from "./DisplayBox";
 import InputButton from "./InputButton";
 import NumericKeypad from "./NumericKeypad";
+import "./style/DisplayBox.css";
 
 function CutLength({ isLocked, socket }) {
   const [cutLength, setCutLength] = useState("");
@@ -31,11 +32,18 @@ function CutLength({ isLocked, socket }) {
 
   return (
     <div className="display-box-container">
-      <DisplayBox label="Cut Length" value={`${cutLength} in`} onClick={handleOpenKeypad} />
+      <DisplayBox 
+        label="Cut Length" 
+        
+        value={cutLength ? `${parseFloat(cutLength).toFixed(3)} in` : "00.000 in "} 
+        onClick={handleOpenKeypad} 
+      />
 
-      <InputButton onClick={handleOpenKeypad} disabled={isLocked}>
-        Input Length
-      </InputButton>
+      <InputButton
+            label="Input Length"
+            onClick={() => !isLocked && handleOpenKeypad("cutLength")}
+            disabled={isLocked}
+        />
 
       {showKeypad && (
         <NumericKeypad

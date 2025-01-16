@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DisplayBox from "./DisplayBox";
 import InputButton from "./InputButton";
 import NumericKeypad from "./NumericKeypad";
+import "./style/DisplayBox.css";
 
 function CutQuantity({ isLocked, socket }) {
   const [cutQuantity, setCutQuantity] = useState("");
@@ -33,9 +34,11 @@ function CutQuantity({ isLocked, socket }) {
     <div className="display-box-container">
       <DisplayBox label="Cut Quantity" value={cutQuantity || "00000"} onClick={handleOpenKeypad} />
 
-      <InputButton onClick={handleOpenKeypad} disabled={isLocked}>
-        Input Quantity
-      </InputButton>
+      <InputButton
+            label="Input Quantity"
+            onClick={() => !isLocked && handleOpenKeypad("cutQuantity")}
+            disabled={isLocked}
+          />
 
       {showKeypad && (
         <NumericKeypad

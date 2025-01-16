@@ -10,6 +10,8 @@ import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import ScreenLockButton from './components/ScreenLockButton.jsx';
 import EStopButton from './components/EStopButton.jsx';
+import CutLength from './components/CutLengthInput.jsx';
+import CutQuantity from './components/CutQuantityInput.jsx';
 
 // const socket = io('http://192.168.1.156:4300');
 
@@ -42,36 +44,36 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0); // Accumulated time for timer
 
 
-  const handleOpenKeypad = (inputType) => {
-    setActiveInput(inputType);
-    setShowKeypad(true);
-  };
+  // const handleOpenKeypad = (inputType) => {
+  //   setActiveInput(inputType);
+  //   setShowKeypad(true);
+  // };
 
-  const handleKeypadSubmit = (value) => {
-    if (activeInput === "cutLength") {
-      setCutLength(value);
-    } else if (activeInput === "cutQuantity") {
-      setCutQuantity(value);
-    }
+  // const handleKeypadSubmit = (value) => {
+  //   if (activeInput === "cutLength") {
+  //     setCutLength(value);
+  //   } else if (activeInput === "cutQuantity") {
+  //     setCutQuantity(value);
+  //   }
 
-    setShowKeypad(false);
-  };
+  //   setShowKeypad(false);
+  // };
 
-  const handleConfirm = () => {
-    if (activeInput === "cutLength") {
-      setCutLength(inputValue);
-    } else if (activeInput === "cutQuantity") {
-      setCutQuantity(inputValue.padStart(5, '0'));
-    }
-    setShowConfirmation(false);
-    setActiveInput(null);
-  };
+  // const handleConfirm = () => {
+  //   if (activeInput === "cutLength") {
+  //     setCutLength(inputValue);
+  //   } else if (activeInput === "cutQuantity") {
+  //     setCutQuantity(inputValue.padStart(5, '0'));
+  //   }
+  //   setShowConfirmation(false);
+  //   setActiveInput(null);
+  // };
 
-  const handleCancel = () => {
-    setShowConfirmation(false);
-    setInputValue("");
-    setActiveInput(null);
-  };
+  // const handleCancel = () => {
+  //   setShowConfirmation(false);
+  //   setInputValue("");
+  //   setActiveInput(null);
+  // };
 
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -206,7 +208,7 @@ const handleStartPause = () => {
     resetTimer();
 
     // Reset all relevant states
-    setCutLength("000.000");
+    setCutLength("00.000");
     setCutQuantity("00000");
     setCutCount(0);
     setLiveCutFeed(0);
@@ -386,7 +388,20 @@ const handleStartPause = () => {
   return (
     <div className="app">
       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
-  
+
+       {/* Wrap components inside cut-data-section for correct layout */}
+    <div className="cut-data-section">
+      <CutLength isLocked={isLocked} socket={socket} />
+      <CutQuantity isLocked={isLocked} socket={socket} />
+    </div>
+
+    <div className="display-section">
+      <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, "0")} />
+      <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, "0")} />
+      <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, "0")} />
+    </div>
+{/*   
+
       <div className="cut-data-section">
         <div className="display-box-container">
           <label className="display-label">Cut Length</label>
@@ -427,7 +442,7 @@ const handleStartPause = () => {
           onSubmit={handleKeypadSubmit}
           allowDecimal={activeInput === "cutLength"}
         />
-      )}
+      )} */}
   
       {/* {showConfirmation && (
         <ConfirmationDialog
@@ -437,7 +452,7 @@ const handleStartPause = () => {
         />
       )} */}
   
-      {showResetConfirmation && (
+      {/* {showResetConfirmation && (
         <ConfirmationDialog
           value="Are you sure you want to reset the input values to 0?"
           onConfirm={confirmReset}
@@ -458,7 +473,7 @@ const handleStartPause = () => {
           label="Live Cut Feed"
           value={liveCutFeed.toFixed(3).toString().padStart(7, "0")}
         />
-      </div>
+      </div> */}
   
       <div className="control-section">
         <div className="control-column">
