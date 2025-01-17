@@ -32,11 +32,12 @@ function App() {
   const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
   const [wheelDiameter, setWheelDiameter] = useState(4.00); // Default wheel diameter
   const [shearDelay, setShearDelay] = useState(6.00);
-  const [inputValue, setInputValue] = useState("");
-  const [activeInput, setActiveInput] = useState(null);
+  // const [inputValue, setInputValue] = useState("");
+  // const [activeInput, setActiveInput] = useState(null);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
   const [isPaused, setIsPaused] = useState(false); // Track if motor is paused
   const [isLocked, setIsLocked] = useState(false);
+  const [resetTrigger, setResetTrigger] = useState(false); // Reset trigger
   const [isEStopActive, setIsEStopActive] = useState(false); // Track E-STOP state
   const [isResumeRequired, setIsResumeRequired] = useState(false); // Track if Resume is required
   const [timer, setTimer] = useState(null);
@@ -199,25 +200,41 @@ const handleStartPause = () => {
   startTimer(); // Start the timer
 };
 
+const handleReset = () => {
+  console.log("Reset command sent.");
 
-  const handleReset = () => {
-    socket.emit("confirm_reset", { action: "reset" });
-    console.log("Reset command sent.");
+  // Toggle resetTrigger to notify CutLength.js & CutQuantity.js
+  setResetTrigger((prev) => !prev);
 
-    // Stop and reset the timer
-    resetTimer();
+  // Reset other relevant states in App.js
+  setCutCount(0);
+  setLiveCutFeed(0);
+  setIsRunning(false);
+  setIsPaused(false);
+  setIsResumeRequired(false);
 
-    // Reset all relevant states
-    setCutLength("00.000");
-    setCutQuantity("00000");
-    setCutCount(0);
-    setLiveCutFeed(0);
-    setIsRunning(false);
-    setIsPaused(false);
-    setIsResumeRequired(false);
-
-    alert("Machine reset successfully!");
+  alert("Machine reset successfully!");
 };
+
+
+//   const handleReset = () => {
+//     socket.emit("confirm_reset", { action: "reset" });
+//     console.log("Reset command sent.");
+
+//     // Stop and reset the timer
+//     resetTimer();
+
+//     // Reset all relevant states
+//     setCutLength("00.000");
+//     setCutQuantity("00000");
+//     setCutCount(0);
+//     setLiveCutFeed(0);
+//     setIsRunning(false);
+//     setIsPaused(false);
+//     setIsResumeRequired(false);
+
+//     alert("Machine reset successfully!");
+// };
 
   const confirmReset = () => {
     socket.emit("confirm_reset", { action: "reset" });
@@ -391,8 +408,8 @@ const handleStartPause = () => {
 
        {/* Wrap components inside cut-data-section for correct layout */}
     <div className="cut-data-section">
-      <CutLength isLocked={isLocked} socket={socket} />
-      <CutQuantity isLocked={isLocked} socket={socket} />
+      <CutLength isLocked={isLocked} socket={socket} resetTrigger={resetTrigger} />
+      <CutQuantity isLocked={isLocked} socket={socket} resetTrigger={resetTrigger}/>
     </div>
 
     <div className="display-section">
