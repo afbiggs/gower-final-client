@@ -1,0 +1,83 @@
+/* Access PIN Prompt */
+.pin-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1000;
+    text-align: center;
+    width: 280px;
+  }
+  
+  /* PIN Display */
+  .pin-display {
+    width: 100%;
+    font-size: 24px;
+    padding: 5px;
+    font-weight: bold;
+    letter-spacing: 8px;
+    margin-bottom: 20px;
+    color: white;
+    /* background-color: black; */
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  /* Keypad Styling */
+  .pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 250px;
+  }
+  
+  /* Keypad Buttons */
+  .lock-pin-keypad-button {
+    font-size: 20px;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #d9d9d9;
+    cursor: pointer;
+    width: 80px;
+    height: 60px;
+  }
+  
+  /* Clear (Backspace) Button */
+  .keypad-button.clear {
+    background-color: #f44336;
+    color: white;
+    width: 95px;
+    height: 40px;
+  }
+  
+  /* Submit (OK) Button */
+  .keypad-button.submit {
+    background-color: #4caf50;
+    color: white;
+    width: 95px;
+    height: 40px;
+  }
+  
+  /* Actions (Clear & Submit) */
+  .keypad-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* Cancel Button */
+  .popup-cancel {
+    background-color: #666;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  }

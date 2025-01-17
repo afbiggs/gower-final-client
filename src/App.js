@@ -6,6 +6,7 @@ import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 import EncoderCalibrationPopup from "./components/EncoderCalibrationPopup";
+import CalibrationAccessKeypad from './components/CalibrationAccessKeypad.jsx';
 import NumericKeypad from "./components/NumericKeypad.jsx";
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import ScreenLockButton from './components/ScreenLockButton.jsx';
@@ -28,6 +29,7 @@ function App() {
   const [liveCutFeed, setLiveCutFeed] = useState(0);
   const [showKeypad, setShowKeypad] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showAccessKeypad, setShowAccessKeypad] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
   const [wheelDiameter, setWheelDiameter] = useState(4.00); // Default wheel diameter
@@ -207,6 +209,7 @@ const handleReset = () => {
   setResetTrigger((prev) => !prev);
 
   // Reset other relevant states in App.js
+  resetTimer(); // Reset the timer
   setCutCount(0);
   setLiveCutFeed(0);
   setIsRunning(false);
@@ -295,8 +298,13 @@ const handleReset = () => {
   
 
   const handleOpenCalibration = () => {
-    setShowEncoderCalibration(true);
-  };
+    setShowAccessKeypad(true); // Show PIN keypad first
+};
+
+  const handleAccessGranted = () => {
+    setShowAccessKeypad(false);
+    setShowEncoderCalibration(true); // Open Calibration after correct PIN
+};
 
   const handleCalibrationSubmit = (newDiameter) => {
     if (newDiameter > 0) {
@@ -524,6 +532,15 @@ const handleReset = () => {
 >
   Calibration
 </button>
+
+ {/* Access PIN Keypad */}
+ {showAccessKeypad && (
+                <CalibrationAccessKeypad
+                    onClose={() => setShowAccessKeypad(false)}
+                    onAccessGranted={handleAccessGranted}
+                />
+            )}
+
 
 {showEncoderCalibration && (
   <EncoderCalibrationPopup
