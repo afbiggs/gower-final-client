@@ -1,24 +1,22 @@
-import './index.css';
-import './App.css';
-import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import "./index.css";
+import "./App.css";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import DisplayBox from "./components/DisplayBox.jsx";
 import InputButton from "./components/InputButton.jsx";
 import ControlButton from "./components/ControlButton.jsx";
 import EncoderCalibrationPopup from "./components/EncoderCalibrationPopup";
-import CalibrationAccessKeypad from './components/CalibrationAccessKeypad.jsx';
+import CalibrationAccessKeypad from "./components/CalibrationAccessKeypad.jsx";
 import NumericKeypad from "./components/NumericKeypad.jsx";
-import ConfirmationDialog from './components/ConfirmationDialog.jsx';
-import ScreenLockButton from './components/ScreenLockButton.jsx';
-import EStopButton from './components/EStopButton.jsx';
-import CutLength from './components/CutLengthInput.jsx';
-import CutQuantity from './components/CutQuantityInput.jsx';
+import ConfirmationDialog from "./components/ConfirmationDialog.jsx";
+import ScreenLockButton from "./components/ScreenLockButton.jsx";
+import EStopButton from "./components/EStopButton.jsx";
+import CutLength from "./components/CutLengthInput.jsx";
+import CutQuantity from "./components/CutQuantityInput.jsx";
 
 // const socket = io('http://192.168.1.156:4300');
 
-const socket = io('http://192.168.4.1:4300');
-
-
+const socket = io("http://192.168.4.1:4300");
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
@@ -27,15 +25,10 @@ function App() {
   const [cutCount, setCutCount] = useState(0);
   const [cutCycleTime, setCutCycleTime] = useState("00:00:00");
   const [liveCutFeed, setLiveCutFeed] = useState(0);
-  const [showKeypad, setShowKeypad] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAccessKeypad, setShowAccessKeypad] = useState(false);
-  const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showEncoderCalibration, setShowEncoderCalibration] = useState(false);
-  const [wheelDiameter, setWheelDiameter] = useState(4.00); // Default wheel diameter
-  const [shearDelay, setShearDelay] = useState(6.00);
-  // const [inputValue, setInputValue] = useState("");
-  // const [activeInput, setActiveInput] = useState(null);
+  const [wheelDiameter, setWheelDiameter] = useState(4.0); // Default wheel diameter
+  const [shearDelay, setShearDelay] = useState(6.0);
   const [isRunning, setIsRunning] = useState(false); // Track if motor is running
   const [isPaused, setIsPaused] = useState(false); // Track if motor is paused
   const [isLocked, setIsLocked] = useState(false);
@@ -46,46 +39,17 @@ function App() {
   const [timerStartTime, setTimerStartTime] = useState(0); // Start time for timer
   const [elapsedTime, setElapsedTime] = useState(0); // Accumulated time for timer
 
-
-  // const handleOpenKeypad = (inputType) => {
-  //   setActiveInput(inputType);
-  //   setShowKeypad(true);
-  // };
-
-  // const handleKeypadSubmit = (value) => {
-  //   if (activeInput === "cutLength") {
-  //     setCutLength(value);
-  //   } else if (activeInput === "cutQuantity") {
-  //     setCutQuantity(value);
-  //   }
-
-  //   setShowKeypad(false);
-  // };
-
-  // const handleConfirm = () => {
-  //   if (activeInput === "cutLength") {
-  //     setCutLength(inputValue);
-  //   } else if (activeInput === "cutQuantity") {
-  //     setCutQuantity(inputValue.padStart(5, '0'));
-  //   }
-  //   setShowConfirmation(false);
-  //   setActiveInput(null);
-  // };
-
-  // const handleCancel = () => {
-  //   setShowConfirmation(false);
-  //   setInputValue("");
-  //   setActiveInput(null);
-  // };
-
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = Math.floor(totalSeconds % 60);
-    
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(seconds).padStart(2, "0")}`;
   };
-  
+
   const startTimer = () => {
     const startTime = Date.now();
     setTimerStartTime(startTime);
@@ -96,7 +60,7 @@ function App() {
     }, 100);
     setTimer(newTimer);
   };
-  
+
   const resumeTimer = () => {
     const resumeTime = Date.now();
     const offsetTime = elapsedTime * 1000; // Convert elapsed time to milliseconds
@@ -109,14 +73,14 @@ function App() {
     }, 100);
     setTimer(newTimer);
   };
-  
+
   const pauseTimer = () => {
     if (timer) {
       clearInterval(timer);
     }
     setTimer(null);
   };
-  
+
   const resetTimer = () => {
     if (timer) {
       clearInterval(timer); // Stop the timer interval
@@ -125,135 +89,97 @@ function App() {
     setElapsedTime(0);
     setCutCycleTime("00:00:00"); // Reset the displayed timer
   };
-  
 
-const handleStartPause = () => {
-  if (isEStopActive) {
+  const handleStartPause = () => {
+    if (isEStopActive) {
       alert("Reset the E-Stop first before continuing.");
       return;
-  }
+    }
 
-  if (isResumeRequired) {
+    if (isResumeRequired) {
       socket.emit("resume_motor", (ack) => {
-          if (ack && ack.error) {
-              console.error("Error resuming motor:", ack.error);
-          } else {
-              console.log("Motor resumed after E-STOP reset.");
-          }
+        if (ack && ack.error) {
+          console.error("Error resuming motor:", ack.error);
+        } else {
+          console.log("Motor resumed after E-STOP reset.");
+        }
       });
       setIsResumeRequired(false); // Resume is no longer required
       setIsRunning(true); // Machine is running
       startTimer(); // Resume the timer
       return;
-  }
+    }
 
-  if (isPaused) {
+    if (isPaused) {
       socket.emit("resume_motor", (ack) => {
-          if (ack && ack.error) {
-              console.error("Error resuming motor:", ack.error);
-          } else {
-              console.log("Motor resumed.");
-          }
+        if (ack && ack.error) {
+          console.error("Error resuming motor:", ack.error);
+        } else {
+          console.log("Motor resumed.");
+        }
       });
       setIsRunning(true); // Machine is running
       setIsPaused(false); // Clear paused state
       resumeTimer(); // Resume the timer
       return;
-  }
+    }
 
-  if (isRunning) {
+    if (isRunning) {
       socket.emit("pause_motor", (ack) => {
-          if (ack && ack.error) {
-              console.error("Error pausing motor:", ack.error);
-          } else {
-              console.log("Motor paused.");
-          }
+        if (ack && ack.error) {
+          console.error("Error pausing motor:", ack.error);
+        } else {
+          console.log("Motor paused.");
+        }
       });
       setIsRunning(false); // Machine is paused
       setIsPaused(true); // Set paused state
       pauseTimer(); // Pause the timer
       return;
-  }
+    }
 
-  // Default case: Start the motor
-  const data = {
+    // Default case: Start the motor
+    const data = {
       cutLength: parseFloat(cutLength),
       cutQuantity: parseInt(cutQuantity, 10),
+    };
+
+    socket.emit("set_cut_parameters", data, (ack) => {
+      if (ack && ack.error) {
+        console.error("Error sending cut parameters:", ack.error);
+      } else {
+        console.log("Cut parameters sent to server:", data);
+      }
+    });
+
+    socket.emit("start_motor", (ack) => {
+      if (ack && ack.error) {
+        console.error("Error starting motor:", ack.error);
+      } else {
+        console.log("Motor started.");
+      }
+    });
+
+    setIsRunning(true); // Machine is running
+    setIsPaused(false); // Clear paused state
+    startTimer(); // Start the timer
   };
 
-  socket.emit("set_cut_parameters", data, (ack) => {
-      if (ack && ack.error) {
-          console.error("Error sending cut parameters:", ack.error);
-      } else {
-          console.log("Cut parameters sent to server:", data);
-      }
-  });
-
-  socket.emit("start_motor", (ack) => {
-      if (ack && ack.error) {
-          console.error("Error starting motor:", ack.error);
-      } else {
-          console.log("Motor started.");
-      }
-  });
-
-  setIsRunning(true); // Machine is running
-  setIsPaused(false); // Clear paused state
-  startTimer(); // Start the timer
-};
-
-const handleReset = () => {
-  console.log("Reset command sent.");
-
-  // Toggle resetTrigger to notify CutLength.js & CutQuantity.js
-  setResetTrigger((prev) => !prev);
-
-  // Reset other relevant states in App.js
-  resetTimer(); // Reset the timer
-  setCutCount(0);
-  setLiveCutFeed(0);
-  setIsRunning(false);
-  setIsPaused(false);
-  setIsResumeRequired(false);
-
-  alert("Machine reset successfully!");
-};
-
-
-//   const handleReset = () => {
-//     socket.emit("confirm_reset", { action: "reset" });
-//     console.log("Reset command sent.");
-
-//     // Stop and reset the timer
-//     resetTimer();
-
-//     // Reset all relevant states
-//     setCutLength("00.000");
-//     setCutQuantity("00000");
-//     setCutCount(0);
-//     setLiveCutFeed(0);
-//     setIsRunning(false);
-//     setIsPaused(false);
-//     setIsResumeRequired(false);
-
-//     alert("Machine reset successfully!");
-// };
-
-  const confirmReset = () => {
-    socket.emit("confirm_reset", { action: "reset" });
+  const handleReset = () => {
     console.log("Reset command sent.");
 
+    // Toggle resetTrigger to notify CutLength.js & CutQuantity.js
+    setResetTrigger((prev) => !prev);
+
+    // Reset other relevant states in App.js
     resetTimer(); // Reset the timer
-    setCutLength("000.000");
-    setCutQuantity("00000");
     setCutCount(0);
     setLiveCutFeed(0);
     setIsRunning(false);
     setIsPaused(false);
-};
-  
-  const cancelReset = () => {
-    setShowResetConfirmation(false);
+    setIsResumeRequired(false);
+
+    alert("Machine reset successfully!");
   };
 
   const handleMaterialForwardPress = () => {
@@ -295,27 +221,14 @@ const handleReset = () => {
     }
   };
 
-  
-
   const handleOpenCalibration = () => {
     setShowAccessKeypad(true); // Show PIN keypad first
-};
+  };
 
   const handleAccessGranted = () => {
     setShowAccessKeypad(false);
     setShowEncoderCalibration(true); // Open Calibration after correct PIN
-};
-
-  const handleCalibrationSubmit = (newDiameter) => {
-    if (newDiameter > 0) {
-      socket.emit('update_wheel_diameter', { wheelDiameter: newDiameter });
-      console.log(`Wheel circumference sent to server: ${newDiameter}`);
-      setShowEncoderCalibration(false); // Close the popup
-    } else {
-      alert('Please enter a valid diameter.');
-    }
   };
-
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -332,24 +245,24 @@ const handleReset = () => {
       console.log("Received cut_status:", data);
 
       if (data.inputQuantity !== undefined) {
-          const newQuantity = parseInt(data.inputQuantity, 10);
+        const newQuantity = parseInt(data.inputQuantity, 10);
 
-          // Stop the timer and reset states when quantity reaches zero
-          if (newQuantity <= 0) {
-              resetTimer(); // Stop the timer
-              setIsRunning(false);
-              setIsPaused(false);
-              setCutQuantity("00000");
-              alert("Cutting process completed!"); // Notify the user
-          } else {
-              setCutQuantity(newQuantity.toString().padStart(5, "0"));
-          }
+        // Stop the timer and reset states when quantity reaches zero
+        if (newQuantity <= 0) {
+          resetTimer(); // Stop the timer
+          setIsRunning(false);
+          setIsPaused(false);
+          setCutQuantity("00000");
+          alert("Cutting process completed!"); // Notify the user
+        } else {
+          setCutQuantity(newQuantity.toString().padStart(5, "0"));
+        }
       }
 
       if (data.cutCount !== undefined) {
-          setCutCount(data.cutCount);
+        setCutCount(data.cutCount);
       }
-  });
+    });
 
     socket.on("travel_distance", (data) => {
       if (data.travelDistance !== undefined) {
@@ -358,45 +271,42 @@ const handleReset = () => {
     });
 
     socket.on("e_stop_triggered", () => {
-        setIsEStopActive(true);
-        setIsResumeRequired(true);
-        setIsRunning(false);
-        setIsPaused(false);
-      });
-    
+      setIsEStopActive(true);
+      setIsResumeRequired(true);
+      setIsRunning(false);
+      setIsPaused(false);
+    });
+
     socket.on("reset_e_stop", () => {
-        setIsEStopActive(false);
-      });
-    
+      setIsEStopActive(false);
+    });
+
     socket.on("pause_motor", () => {
-        setIsRunning(false);
-        setIsPaused(true);
-      });
-    
+      setIsRunning(false);
+      setIsPaused(true);
+    });
+
     socket.on("resume_motor", () => {
-        setIsRunning(true);
-        setIsPaused(false);
-        setIsResumeRequired(false);
-      });
+      setIsRunning(true);
+      setIsPaused(false);
+      setIsResumeRequired(false);
+    });
 
     socket.on("cutting_completed", (data) => {
-        console.log("Cutting process completed:", data);
-    
-            // Reset states
-         setIsRunning(false);
-         setIsPaused(false);
-         setIsResumeRequired(false);
-    
-            // Stop and reset the timer
-          resetTimer();
-    
-            // Optionally reset cut-related values
-          setCutCount(data.cutCount || 0);
-          setCutQuantity("00000");
-      });
-    
-      
-   
+      console.log("Cutting process completed:", data);
+
+      // Reset states
+      setIsRunning(false);
+      setIsPaused(false);
+      setIsResumeRequired(false);
+
+      // Stop and reset the timer
+      resetTimer();
+
+      // Optionally reset cut-related values
+      setCutCount(data.cutCount || 0);
+      setCutQuantity("00000");
+    });
 
     return () => {
       socket.off("connect");
@@ -414,77 +324,20 @@ const handleReset = () => {
     <div className="app">
       <h1 className="heading">SPARK ROBOTIC X LEISURECRAFT</h1>
 
-       {/* Wrap components inside cut-data-section for correct layout */}
-    <div className="cut-data-section">
-      <CutLength isLocked={isLocked} socket={socket} resetTrigger={resetTrigger} />
-      <CutQuantity isLocked={isLocked} socket={socket} resetTrigger={resetTrigger}/>
-    </div>
-
-    <div className="display-section">
-      <DisplayBox label="Cut Count" value={cutCount.toString().padStart(5, "0")} />
-      <DisplayBox label="Cut Cycle Time" value={String(cutCycleTime).padStart(6, "0")} />
-      <DisplayBox label="Live Cut Feed" value={liveCutFeed.toFixed(3).toString().padStart(7, "0")} />
-    </div>
-{/*   
-
+      {/* Wrap components inside cut-data-section for correct layout */}
       <div className="cut-data-section">
-        <div className="display-box-container">
-          <label className="display-label">Cut Length</label>
-          <div className="display-box">
-            <span className="display-length">
-              {cutLength}
-              <span className="unit"> in</span>
-            </span>
-          </div>
-          <InputButton
-            label="Input Length"
-            onClick={() => !isLocked && handleOpenKeypad("cutLength")}
-            disabled={isLocked}
-          />
-        </div>
-  
-        <div className="display-box-container">
-          <label className="display-label">Cut Quantity</label>
-          <div className="display-box">
-            <input
-              type="text"
-              className="display-input"
-              value={cutQuantity}
-              readOnly
-            />
-          </div>
-          <InputButton
-            label="Input Quantity"
-            onClick={() => !isLocked && handleOpenKeypad("cutQuantity")}
-            disabled={isLocked}
-          />
-        </div>
+        <CutLength
+          isLocked={isLocked}
+          socket={socket}
+          resetTrigger={resetTrigger}
+        />
+        <CutQuantity
+          isLocked={isLocked}
+          socket={socket}
+          resetTrigger={resetTrigger}
+        />
       </div>
-  
-      {showKeypad && (
-        <NumericKeypad
-          onClose={() => setShowKeypad(false)}
-          onSubmit={handleKeypadSubmit}
-          allowDecimal={activeInput === "cutLength"}
-        />
-      )} */}
-  
-      {/* {showConfirmation && (
-        <ConfirmationDialog
-          value={inputValue}
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )} */}
-  
-      {/* {showResetConfirmation && (
-        <ConfirmationDialog
-          value="Are you sure you want to reset the input values to 0?"
-          onConfirm={confirmReset}
-          onCancel={cancelReset}
-        />
-      )}
-  
+
       <div className="display-section">
         <DisplayBox
           label="Cut Count"
@@ -498,8 +351,8 @@ const handleReset = () => {
           label="Live Cut Feed"
           value={liveCutFeed.toFixed(3).toString().padStart(7, "0")}
         />
-      </div> */}
-  
+      </div>
+
       <div className="control-section">
         <div className="control-column">
           <button
@@ -517,7 +370,7 @@ const handleReset = () => {
               ? "Pause"
               : "Start"}
           </button>
-  
+
           <button
             className="control-button"
             onClick={!isLocked ? handleReset : null}
@@ -526,65 +379,44 @@ const handleReset = () => {
             Reset
           </button>
           <button
-  className="control-button blue-button"
-  onClick={!isLocked ? handleOpenCalibration : null}
-  disabled={isLocked}
->
-  Calibration
-</button>
-
- {/* Access PIN Keypad */}
- {showAccessKeypad && (
-                <CalibrationAccessKeypad
-                    onClose={() => setShowAccessKeypad(false)}
-                    onAccessGranted={handleAccessGranted}
-                />
-            )}
-
-
-{showEncoderCalibration && (
-  <EncoderCalibrationPopup
-    onClose={() => setShowEncoderCalibration(false)}
-    onSubmit={(calibration) => {
-      // Persist the new calibration values
-      setWheelDiameter(calibration.wheelDiameter);
-      setShearDelay(calibration.shearDelay);
-
-      // Emit the entire calibration object to the server
-      socket.emit("update_calibration", {
-        calibration, // Send the calibration object
-      });
-
-      console.log(`Calibration updated: ${JSON.stringify(calibration)}`);
-    }}
-    defaultCalibration={{
-      wheelDiameter,
-      shearDelay, // Pass the current shear delay value
-    }}
-  />
-)}
-
-          {/* <button
             className="control-button blue-button"
             onClick={!isLocked ? handleOpenCalibration : null}
             disabled={isLocked}
           >
             Calibration
           </button>
-  
+
+          {/* Access PIN Keypad */}
+          {showAccessKeypad && (
+            <CalibrationAccessKeypad
+              onClose={() => setShowAccessKeypad(false)}
+              onAccessGranted={handleAccessGranted}
+            />
+          )}
+
           {showEncoderCalibration && (
             <EncoderCalibrationPopup
               onClose={() => setShowEncoderCalibration(false)}
-              onSubmit={(newDiameter) => {
-                setWheelDiameter(newDiameter); // Persist the new diameter
-                socket.emit("update_wheel_diameter", {
-                  wheelDiameter: newDiameter,
+              onSubmit={(calibration) => {
+                // Persist the new calibration values
+                setWheelDiameter(calibration.wheelDiameter);
+                setShearDelay(calibration.shearDelay);
+
+                // Emit the entire calibration object to the server
+                socket.emit("update_calibration", {
+                  calibration, // Send the calibration object
                 });
-                console.log(`Wheel diameter updated: ${newDiameter}`);
+
+                console.log(
+                  `Calibration updated: ${JSON.stringify(calibration)}`
+                );
               }}
-              defaultDiameter={wheelDiameter} // Pass the current value
+              defaultCalibration={{
+                wheelDiameter,
+                shearDelay, // Pass the current shear delay value
+              }}
             />
-          )} */}
+          )}
         </div>
         <div className="control-column">
           <button
@@ -619,6 +451,5 @@ const handleReset = () => {
       </div>
     </div>
   );
-  }
-  export default App;
-
+}
+export default App;
