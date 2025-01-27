@@ -39,6 +39,8 @@ function App() {
   const [timerStartTime, setTimerStartTime] = useState(0); // Start time for timer
   const [elapsedTime, setElapsedTime] = useState(0); // Accumulated time for timer
 
+  // *****************************Logic for Cut Cycle Time and Reset Handling*******************************
+
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -89,6 +91,10 @@ function App() {
     setElapsedTime(0);
     setCutCycleTime("00:00:00"); // Reset the displayed timer
   };
+// ********************************* End of Cut Cycle Timer Logic ******************************************
+
+
+// ************************* Start of Logic for Start/Pause & Sending Cut Parameters **************************
 
   const handleStartPause = () => {
     if (isEStopActive) {
@@ -164,7 +170,11 @@ function App() {
     setIsPaused(false); // Clear paused state
     startTimer(); // Start the timer
   };
+// **************************** End of Start/Pause and cut parameter logic ********************************
 
+
+
+//********************** */ Reset for timer, cut count, and cut feed *****************************************8
   const handleReset = () => {
     console.log("Reset command sent.");
 
@@ -181,6 +191,10 @@ function App() {
 
     alert("Machine reset successfully!");
   };
+// ***********************************************************************************************************
+
+
+// ********************** Logic for Material forward and Manual Shear Momentary Buttons ***********************
 
   const handleMaterialForwardPress = () => {
     socket.emit("material_forward_control", "ON");
@@ -202,11 +216,14 @@ function App() {
     socket.emit("manual_shear_control", "OFF");
     console.log("Manual Shear: OFF");
   };
+  // **********************************************************************************************************
 
+  // handler for screen lock button
   const handleToggleLock = () => {
     setIsLocked((prev) => !prev);
   };
 
+  // Handler for E-stop 
   const handleToggleEStop = () => {
     if (!isEStopActive) {
       console.log("E-STOP Triggered");
@@ -221,15 +238,19 @@ function App() {
     }
   };
 
+  // handles the access control keypad for the calibration settings 
   const handleOpenCalibration = () => {
     setShowAccessKeypad(true); // Show PIN keypad first
   };
 
+  // handler for opening the calibration settings after successful pin input 
   const handleAccessGranted = () => {
     setShowAccessKeypad(false);
     setShowEncoderCalibration(true); // Open Calibration after correct PIN
   };
 
+
+  
   useEffect(() => {
     socket.on("connect", () => {
       setConnectionStatus("Connected");
