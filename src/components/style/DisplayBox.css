@@ -18,7 +18,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 5px; 
+  margin-bottom: 0px; 
 }
 
 .cut-data-section .display-box {
@@ -58,7 +58,7 @@
   justify-content: center;
   font-size: 32px;
   color: white;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   position: relative;
 }
 
