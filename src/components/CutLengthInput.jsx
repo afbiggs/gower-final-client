@@ -1,29 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DisplayBox from "./DisplayBox";
 import InputButton from "./InputButton";
 import NumericKeypad from "./NumericKeypad";
-import "./style/DisplayBox.css";
 
-function CutLength({ isLocked, socket, resetTrigger }) {
+function CutLengthInput({ isLocked, onCutLengthChange }) {
   const [cutLength, setCutLength] = useState("");
   const [showKeypad, setShowKeypad] = useState(false);
-
-  // Listen for updates from the server
-  useEffect(() => {
-    socket.on("updateCutLength", (data) => {
-      setCutLength(data);
-    });
-
-    return () => {
-      socket.off("updateCutLength"); // Cleanup listener
-    };
-  }, [socket]);
-
-  // Reset cutLength when resetTrigger changes
-  useEffect(() => {
-    setCutLength("00.000"); // Reset the cut length to default
-    console.log("Cut Length reset.");
-  }, [resetTrigger]); // Runs whenever resetTrigger changes
 
   const handleOpenKeypad = () => {
     if (!isLocked) {
@@ -33,9 +15,16 @@ function CutLength({ isLocked, socket, resetTrigger }) {
 
   const handleKeypadSubmit = (value) => {
     setCutLength(value);
-    socket.emit("setCutLength", value);
+
+    if (onCutLengthChange) {  // ✅ Prevents crashes if prop is missing
+        onCutLengthChange(value); 
+    } else {
+        console.error("onCutLengthChange is undefined!");
+    }
+
     setShowKeypad(false);
-  };
+};
+
 
   return (
     <div className="display-box-container">
@@ -47,7 +36,7 @@ function CutLength({ isLocked, socket, resetTrigger }) {
 
       <InputButton
         label="Input Length"
-        onClick={() => !isLocked && handleOpenKeypad("cutLength")}
+        onClick={handleOpenKeypad}
         disabled={isLocked}
       />
 
@@ -62,7 +51,77 @@ function CutLength({ isLocked, socket, resetTrigger }) {
   );
 }
 
-export default CutLength;
+export default CutLengthInput;
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import DisplayBox from "./DisplayBox";
+// import InputButton from "./InputButton";
+// import NumericKeypad from "./NumericKeypad";
+// import "./style/DisplayBox.css";
+
+// function CutLength({ isLocked, socket, resetTrigger }) {
+//   const [cutLength, setCutLength] = useState("");
+//   const [showKeypad, setShowKeypad] = useState(false);
+
+//   // Listen for updates from the server
+//   useEffect(() => {
+//     socket.on("updateCutLength", (data) => {
+//       setCutLength(data);
+//     });
+
+//     return () => {
+//       socket.off("updateCutLength"); // Cleanup listener
+//     };
+//   }, [socket]);
+
+//   // Reset cutLength when resetTrigger changes
+//   useEffect(() => {
+//     setCutLength("00.000"); // Reset the cut length to default
+//     console.log("Cut Length reset.");
+//   }, [resetTrigger]); // Runs whenever resetTrigger changes
+
+//   const handleOpenKeypad = () => {
+//     if (!isLocked) {
+//       setShowKeypad(true);
+//     }
+//   };
+
+//   const handleKeypadSubmit = (value) => {
+//     setCutLength(value);
+//     socket.emit("setCutLength", value);
+//     setShowKeypad(false);
+//   };
+
+//   return (
+//     <div className="display-box-container">
+//       <DisplayBox 
+//         label="Cut Length" 
+//         value={cutLength ? `${parseFloat(cutLength).toFixed(3)} in` : "00.000 in"} 
+//         onClick={handleOpenKeypad} 
+//       />
+
+//       <InputButton
+//         label="Input Length"
+//         onClick={() => !isLocked && handleOpenKeypad("cutLength")}
+//         disabled={isLocked}
+//       />
+
+//       {showKeypad && (
+//         <NumericKeypad
+//           onClose={() => setShowKeypad(false)}
+//           onSubmit={handleKeypadSubmit}
+//           allowDecimal={true}
+//         />
+//       )}
+//     </div>
+//   );
+// }
+
+// export default CutLength;
 
 
 
