@@ -117,6 +117,7 @@ const handleStartPause = () => {
       setIsResumeRequired(false);
       setIsRunning(true);
       setLiveCutFeed(0);
+      startTimer();  // ✅ Start the timer when resuming
       return;
   }
 
@@ -125,6 +126,7 @@ const handleStartPause = () => {
       setIsRunning(true);
       setIsPaused(false);
       setLiveCutFeed(0);
+      resumeTimer();  // ✅ Resume the timer when unpausing
       return;
   }
 
@@ -132,6 +134,7 @@ const handleStartPause = () => {
       socket.emit("pause_motor");
       setIsRunning(false);
       setIsPaused(true);
+      pauseTimer();  // ✅ Pause the timer when stopping
       return;
   }
 
@@ -156,7 +159,9 @@ const handleStartPause = () => {
   setIsRunning(true);
   setIsPaused(false);
   setLiveCutFeed(0);
+  startTimer();  // ✅ Ensure timer starts when Start is pressed
 };
+
 
 
 //   setIsRunning(true);
@@ -401,6 +406,7 @@ const handleReset = () => {
     if (resetTrigger) {
       console.log("Reset Trigger Detected: Resetting Live Cut Feed...");
       setLiveCutFeed(0);
+      resetTimer();
     }
 
     socket.on("e_stop_triggered", () => {
